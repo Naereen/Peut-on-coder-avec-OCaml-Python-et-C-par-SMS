@@ -1,4 +1,4 @@
 {
     "lang": "python",
-    "source": "print(42)"
+    "source": "ANSWER=42;print(ANSWER)"
 }

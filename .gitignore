@@ -109,3 +109,15 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# OCaml compilation files
+*.o
+*.cmo
+*.cmi
+*.cmxa
+*.cma
+*.exe
+*.byte.d
+
+# C compilation files
+*.exe

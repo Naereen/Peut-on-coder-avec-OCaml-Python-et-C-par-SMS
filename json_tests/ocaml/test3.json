@@ -1,4 +1,4 @@
 {
     "lang": "ocaml",
-    "source": "print_int(42)"
+    "source": "let answer = 42 in print_int(answer)"
 }

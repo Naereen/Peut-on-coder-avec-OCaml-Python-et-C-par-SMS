@@ -1,4 +1,4 @@
 {
     "lang": "python",
-    "source": "ANSWER=42; print(ANSWER)"
+    "source": "print(4*10+2)"
 }

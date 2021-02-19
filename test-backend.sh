@@ -21,11 +21,15 @@ echo -e "\n\nReading JSON files from folder '${FOLDER}':"
 
 for f in "$FOLDER"/*.json; do
     echo -e "\nLoad JSON file '${f}':"
+    echo curl --silent \
+        -X POST -H "Content-Type: application/json" \
+        --data @"${f}" \
+        "${URL}/run"
     curl --silent \
         -X POST -H "Content-Type: application/json" \
         --data @"${f}" \
         "${URL}/run" \
         | python -m json.tool \
-        | grep -o '"stdout": "42"'
+        | grep -o '"stdout": "42\(\\n\)\?"'
         # | cat
 done

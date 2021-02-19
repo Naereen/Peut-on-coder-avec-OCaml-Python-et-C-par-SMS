@@ -11,14 +11,14 @@ PORT          = 12345
 
 # ============== Rules for help ==============
 
-all:	start ngrok notify
-local:	start notify
+all:	ngrok notify start
+local:	notify start
 total:	all clean
 
 # ============== Rules for start server ==============
 
 start:
-	python3 ./start_server.py $(ADDRESS) $(PORT)
+	./venv3/bin/python3 ./app.py $(ADDRESS) $(PORT)
 
 ngrok:
 	ngrok_and_text_address.sh http $(PORT)

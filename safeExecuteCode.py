@@ -86,7 +86,22 @@ def safe_execute_code(inputcode,
     """ Ask Camisole to execute the <inputcode> written in <language>, and returns the JSON result from Camisole."""
     data = {
         "lang": str(language),
-        "source": str(inputcode)
+        "source": str(inputcode),
+        # https://camisole.prologin.org/usage.html#adding-limits-and-quotas
+        "compile": {
+            "wall-time": 10,
+            "fsize": 4096,
+            "mem": 100000,
+        },
+        "execute": {
+            "time": 30,
+            "wall-time": 60,
+            "processes": 1,
+            "quota": "50,3",
+            "fsize": 256,
+            "stack": 9000,
+            "mem": 100000,
+        }
     }
     return post_request_to_camisole(data,
         protocol=protocol,

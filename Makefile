@@ -37,16 +37,16 @@ languages_api:
 	curl --silent $(URL)/languages | python -m json.tool
 
 test_python:
-	echo "TODO:"
-	for f in json_tests/python/*.json; do printf "\n\nLoad ${f} - \n" && curl --silent -X POST -H "Content-Type: application/json" --data @${f} ${URL}; done
+	echo "TODO: complete and add more examples!"
+	./test-api.sh ./json_tests/python/
 
 test_ocaml:
-	echo "TODO:"
-	for f in json_tests/python/*.json; do printf "\n\nLoad ${f} - \n" && curl --silent -X POST -H "Content-Type: application/json" --data @${f} ${URL}; done
+	echo "TODO: complete and add more examples!"
+	./test-api.sh ./json_tests/ocaml/
 
 test_c:
-	echo "TODO:"
-	for f in json_tests/python/*.json; do printf "\n\nLoad ${f} - \n" && curl --silent -X POST -H "Content-Type: application/json" --data @${f} ${URL}; done
+	echo "TODO: complete and add more examples!"
+	./test-api.sh ./json_tests/c/
 
 
 #################################### Help #####################################

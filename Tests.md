@@ -14,9 +14,22 @@ Bonus :
 - TODO: montrer que l'on peut afficher proprement le code de retour 0 / 1 / autre ?
 - montrer que le système exécute bien le code en isolement de la machine : pas capable de lire (ou écrire) quoique ce soit, de supprimer un fichier, et d'utiliser Internet.
 
-TODO: automatiser ces tests ?
+## Lancer ou automatiser ces tests ?
+
+Les tests sont définis dans le dossier [json_tests](./json_tests/).
+
+Ces tests sont automatisés avec le super [Makefile](./Makefile) intégré :
+```bash
+$ make test_python
+$ make test_ocaml
+$ make test_c
+```
+
+TODO: automatically build the `fileNUM.ext` and `fileNUM.json` from this file?
 
 ## En Python
+
+> Les tests sont définis dans le dossier [json_tests](./json_tests/python/).
 
 - numériques (pour montrer que l'on peut s'en servir comme d'une petite calculatrice) ;
 
@@ -84,6 +97,8 @@ Out[9]: 1.2.3.4
 
 ## En OCaml
 
+> Les tests sont définis dans le dossier [json_tests](./json_tests/ocaml/).
+
 TODO: WARNING: camisole uses `ocamlopt` and not `ocaml` toplevel!
 
 - numériques (pour montrer que l'on peut s'en servir comme d'une petite calculatrice) ;
@@ -150,6 +165,8 @@ IP : 1.2.3.4
 ```
 
 ## En C
+
+> Les tests sont définis dans le dossier [json_tests](./json_tests/c/).
 
 TODO:
 

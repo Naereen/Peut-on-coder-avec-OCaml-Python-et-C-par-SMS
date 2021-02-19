@@ -1,0 +1,13 @@
+# List of pip (see https://pypi.org/) modules for this project
+# https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS
+
+# For local development, use virtualenv (see Makefile, or this command)
+# virtualenv ./venv3/
+virtualenv  # not needed
+
+# For web app
+flask
+# For Twilio API
+twilio
+
+# TODO: camisole?

@@ -38,15 +38,15 @@ languages_api:
 
 test_python:
 	echo "TODO: complete and add more examples!"
-	./test-api.sh ./json_tests/python/
+	./test-backend.sh ./json_tests/python/
 
 test_ocaml:
 	echo "TODO: complete and add more examples!"
-	./test-api.sh ./json_tests/ocaml/
+	./test-backend.sh ./json_tests/ocaml/
 
 test_c:
 	echo "TODO: complete and add more examples!"
-	./test-api.sh ./json_tests/c/
+	./test-backend.sh ./json_tests/c/
 
 
 #################################### Help #####################################

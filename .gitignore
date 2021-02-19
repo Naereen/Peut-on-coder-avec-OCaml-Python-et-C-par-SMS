@@ -2,6 +2,8 @@
 *~
 .*.swp
 
+*ocaml_history.ml
+
 # Private files
 .*.b64
 *.b64

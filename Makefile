@@ -67,9 +67,9 @@ help:
 
 send:	send_zamok
 send_zamok:	clean-temp
-	CP --exclude=./.git/ --exclude=./venv3/ ./ ${Szam}publis/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git/
+	CP --exclude-from=.gitignore . ${Szam}publis/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git/
 send_local:	clean-temp
-	CP --exclude=./.git/ --exclude=./venv3/ ./ ~/Public/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git/
+	CP --exclude-from=.gitignore . ~/Public/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git/
 
 # ===================== Virtualenv =====================
 
@@ -89,7 +89,7 @@ notify:
 # ===================== Cleaners =====================
 
 clean:	clean-temp
+# TODO: more
 clean-temp:
 	-mv -vf ./*~ /tmp/
-	# TODO: more
 

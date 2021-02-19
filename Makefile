@@ -24,7 +24,8 @@ start:
 	./venv3/bin/python3 ./app.py
 
 ngrok:
-	ngrok_and_text_address.sh $(PROTOCOL) $(PORT)
+	# TODO: don't use my script, just use ngrok?
+	./start-ngrok.sh $(PROTOCOL) $(PORT)
 
 test_api:	test_hello_api test_python test_ocaml test_c
 test_hello_api:	hello_api system_api languages_api

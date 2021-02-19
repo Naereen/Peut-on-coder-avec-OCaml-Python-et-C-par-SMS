@@ -8,12 +8,13 @@
 # Web: https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git
 #
 
+from pprint import pprint
+
 # See https://www.geeksforgeeks.org/get-post-requests-using-python/ for help on this HTTP client using a POST request
 import json
 import requests
-from requests.api import post
 
-# TODO: when importing the module, connect to VM, and list languages
+# DONE: when importing the module, connect to VM, and list languages
 SUPPORTED_LANGUAGES = [
     "python",
     "ocaml",
@@ -49,25 +50,27 @@ def post_request_to_camisole(data,
         print(f"DEBUG: making this request...")
         result = requests.post(url=url, json=json_data)
         print(f"DEBUG: got a result from this request...")
-        result_json = result.json()
-        pprint(result_json)
-        result_data = json.loads(result_json)
-        print(f"DEBUG: result_data = {result_data}")
+        result_data = result.json()
+        pprint(result_data)
+        print(f"DEBUG: result_data of length {len(result_data)}")
         return result_data
 
     except Exception as e:
         print(f"Error:\n{e}")
+        raise e
         return {
             "success": False,
         }
 
-# TODO: try to discover the list of supported languages
+# DONE try to discover the list of supported languages
 try:
+    print(f"DEBUG: querying the camisole backend to get list of languages...")
     data = ""
     result = post_request_to_camisole(data, use_json=False, endpoint="languages")
     json_languages = result["languages"]
-    languages = list(d.keys())
+    languages = list(json_languages.keys())
     SUPPORTED_LANGUAGES = languages
+    print(f"DEBUG: List of languages:\n{SUPPORTED_LANGUAGES}")
 except Exception as e:
     print(f"Error:\n{e}")
     raise e
@@ -91,3 +94,4 @@ def safe_execute_code(inputcode,
         address=address,
         url=url,
     )
+

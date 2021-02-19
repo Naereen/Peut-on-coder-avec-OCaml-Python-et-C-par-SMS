@@ -16,6 +16,7 @@ import time
 # To parse the password from the message
 import re
 from pprint import pprint
+from typing import List, Tuple
 
 # Use base64 to not keep plaintext files of the number, username and password in your home
 import base64
@@ -27,15 +28,18 @@ from safeExecuteCode import safe_execute_code, URL, SUPPORTED_LANGUAGES
 
 
 # DONE: read from .password.b64 file
-def read_b64_file(name):
+def read_b64_file(name: str) -> str:
     """ Open the local file <name>, read and decode (base64) and return its content.
     """
     try:
         with open(name) as f:
-            variable = base64.b64decode(f.readline()[:-1])
-            while variable[-1] == '\n':
-                variable = variable[:-1]
-            return variable
+            print(f"DEBUG: reading file '{name}'")
+            content = base64.b64decode(f.readline()[:-1])
+            while content[-1] == '\n':
+                content = content[:-1]
+            content = content.decode()
+            print(f"DEBUG: content read is\n{content}")
+            return content
     except OSError:
         print(f"Error: unable to read the file '{name}' ...")
         return None
@@ -51,11 +55,11 @@ print(f"Using password = {PASSWORD}...")
 
 
 
-def has_password(message):
+def has_password(message: str) -> bool:
     res = re.search("pw:([^ ]+)", message)
     return res is not None
 
-def parse_password(message):
+def parse_password(message: str) -> str:
     res = re.search("pw:([^ ]+)", message)
     if res:
         password = res.group(0)
@@ -64,7 +68,7 @@ def parse_password(message):
     # TODO: finish this function
     return ""
 
-def check_password(password):
+def check_password(password: str) -> bool:
     return password == PASSWORD
 
 
@@ -73,13 +77,15 @@ class FailedExecution(Exception):
 
 
 # TODO: be able to really execute code
-def execute_code(inputcode, language="python"):
+def execute_code(inputcode: str, language="python") -> Tuple[str, str, int]:
+    print(f"DEBUG: You sent me this {language} code:\n{inputcode}")
     stdout, stderr = "", ""
     exitcode = 0
     stdout = f"You sent me this {language} code:\n{inputcode}"
 
     try:
         json_result = safe_execute_code(inputcode, language=language)
+        print(f"DEBUG: I got back this JSON result:")
         pprint(json_result)  # DEBUG
         if not json_result["success"]:
             raise FailedExecution
@@ -104,6 +110,7 @@ def execute_code(inputcode, language="python"):
         stderr = f"Camisole VM was not probably available, check the configuration.\ncurl {URL}/\ncurl {URL}/system\ncurl {URL}/languages"
         stderr += f"\n\nError: {e}"
         exitcode = 1
+
     # now we are done, give this back to Flask API
     return stdout, stderr, exitcode
 
@@ -111,11 +118,12 @@ def execute_code(inputcode, language="python"):
 from collections import defaultdict
 cellnumbers = defaultdict(lambda: 0)
 
-def format_reply(language, stdout, stderr, exitcode=0):
+def format_reply(language: str, stdout: str, stderr: str, exitcode=0) -> str:
+    """ Format the reply to a nice message that can be printed or sent back by SMS."""
     global cellnumbers
     today = time.strftime("%H:%M:%S %Y-%m-%d")
     cellnumbers[language] += 1
-    cellnumber = cellnumbers
+    cellnumber = cellnumbers[language]
     if stderr and stdout:
         reply = f"""Time: {today}\nOut[{cellnumber}] {stdout}\nError[{cellnumber}] exitcode={exitcode} : {stderr}"""
     elif not stderr and stdout:
@@ -127,19 +135,56 @@ def format_reply(language, stdout, stderr, exitcode=0):
     return reply
 
 
+# ============== Test the API for two main languages ==============
+
+FIRST_TESTS = [
+    {
+        "inputcode" : "print('Camisole backend works for Python!')",
+        "language" : "python"
+    },
+    {
+        "inputcode" : "print(f'The answer to life is = {4*10+2}')",
+        "language" : "python"
+    },
+    {
+        "inputcode": "print_endline 'Camisole backend works for OCaml!';;",
+        "language": "ocaml",
+    },
+    {
+        "inputcode": "Format.printf 'The answer to life is = %d' (4*10+2);;",
+        "language": "ocaml",
+    },
+]
+
+def test_backend() -> None:
+    """ Test the API for two main languages."""
+    for first_test in FIRST_TESTS:
+        print(f"\nDEBUG: trying to use this JSON request:\n{first_test}")
+        inputcode = first_test["inputcode"]
+        language = first_test["language"]
+        print(f"\nDEBUG: trying to execute this code in language={language}:\n{inputcode}")
+        stdout, stderr, exitcode = execute_code(inputcode, language=language)
+        print(f"DEBUG: got an answer with stdout, stderr, exitcode:\n{stdout}\n{stderr}\n{exitcode}")
+        reply = format_reply(language, stdout, stderr)
+        print(f"DEBUG: got a reply:\n{reply}")
+        assert exitcode == 0
+
+if __name__ == '__main__':
+    test_backend()
+
 # ================== now the Flask app ==================
 
 app = Flask(__name__)
 
 
 @app.route("/")
-def check_app():
+def check_app() -> Tuple[Response, int]:
     # returns a simple string stating the app is working
     return Response("It works! The local server is ready!\nNo, go to your Twilio page "), 200
 
 
 @app.route("/twilio", methods=["POST"])
-def inbound_sms():
+def inbound_sms() -> Tuple[Response, int]:
     response = twiml.Response()
     # we get the SMS message from the request. we could also get the
     # "To" and the "From" phone number as well
@@ -173,13 +218,12 @@ def inbound_sms():
         response.message(f"La liste des langues prises en charge est : {str_languages}")
 
     # now for languages
-    # TODO: factor this!?
     else:
         for language in SUPPORTED_LANGUAGES:
             if inbound_message.startswith(f"{language}:"):
 
                 inbound_message = inbound_message.replace("{language}:", "", 1).lstrip()
-                stdout, stderr = execute_code(inbound_message, language=language)
+                stdout, stderr, exitcode = execute_code(inbound_message, language=language)
                 reply = format_reply(language, stdout, stderr)
 
                 response.message(reply)

@@ -21,7 +21,7 @@ TESTS_OCAML = [
 ]
 TESTS_C = [
     {
-        "inputcode": "#include <stdio.h>;\n/* Say hello */\nint main(int argc, char** argv) {\nprintf(\"Camisole backend works for Python!\");\nreturn 0;\n}",
+        "inputcode": "#include <stdio.h>;\n/* Say hello */\nint main(int argc, char** argv) {\nprintf(\"Camisole backend works for C!\");\nreturn 0;\n}",
         "language": "C",
     },
     {

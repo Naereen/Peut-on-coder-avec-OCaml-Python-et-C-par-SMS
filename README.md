@@ -1,6 +1,7 @@
 # :fr: :phone: Peut on coder avec OCaml Python et C par SMS ?
 
 Je souhaite répondre à la question suivante : peut on coder avec OCaml Python et C par SMS ?
+*Spoiler alert*: **oui !**
 
 ## Quel objectif ?
 
@@ -16,7 +17,7 @@ Je souhaite pouvoir faire ça, depuis mon téléphone :
    - qu'il y ait ce mot de passe ;
    - qu'il y ait un numéro incrémental de cellule sortie : trois requêtes de suite seront `Out[1]: ...`, `Out[2]: ...`, `Out[3]: ...`, etc.
    - que ça fonctionne sans problème pour ces trois langages (voir plus ?) ;
-   - TODO: que l'exécution soit sécurisée, et isolée (voir [camisole](https://camisole.prologin.org/) avec [une VM](https://camisole.prologin.org/installation.html#vm-image) ?) ;
+ - - que l'exécution soit sécurisée, et isolée (avec [camisole](https://camisole.prologin.org/) dans [une VM](https://camisole.prologin.org/installation.html#vm-image) ?) ;
 
 5. Premières étapes :
    - que le code soit exécuté sur *ma machine* (ou sur un serveur distant quand ce sera prêt) ;
@@ -24,7 +25,7 @@ Je souhaite pouvoir faire ça, depuis mon téléphone :
 
 - Références : <https://www.fullstackpython.com/blog/respond-sms-text-messages-python-flask.html> en anglais (lu le 2021-02-19).
 
-## Solution
+## Solution ?
 
 Ce dépôt GitHub contient un petit script Python 3 (avec un serveur [Flask](https://flask.palletsprojects.com/)) pour expérimenter et essayer cela.
 
@@ -41,8 +42,7 @@ Quelques questions et réponse :
    - Avec l'API de Twilio, on peut connecter cette appli (ouverte avec ngrok) au numéro de téléphone (payant) fourni par le compte Twilio.
    - Avec tout ça, je peux exécuter (et voir la sortie et le code de retour) en envoyant un SMS à ce numéro.
 
-3. **Où ça en est ?** Juste une idée pour l'instant. TODO: continuer!
-
+3. **Où ça en est ?** ~~Juste une idée pour l'instant.~~ C'était une idée le vendredi 19 février vers 13h, c'était quasiment terminé le soir même !
 
 TODO: la suite n'est pas terminée !
 
@@ -81,14 +81,16 @@ Output: Bien le bonjour depuis Python !
 ```
 
 ```text
-Input: Languages
+Input: Languages?
 Output: List of supported languages are: c, ocaml,python
 ```
 
 ```text
-Input: Langages?"
+Input: Langages ?
 Output: La liste des langues prises en charge est : c, ocaml, python
 ```
+
+> L'ordre de réponse dans les langages peut changer.
 
 TODO: make screenshots of this!
 
@@ -98,7 +100,16 @@ Tout se fait avec un Makefile, donc l'aide aussi :
 
 ```bash
 $ make help
-TODO:
+Help for utilities (by Lilian BESSON, https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git)
+Please use 'make <target>' where <target> is one of
+  setupvenv  to set-up and install requirements in a Python3 virtualenv
+  server     to do everything
+  local      to do local only
+  test_hello_api connects and tests Camisole backend
+  test_api   connects and tests Camisole backend
+  notify     to notify that the server is ready
+  clean      to clean the temp files.
+  ngrok      if the local server is ready, open it to the world with https://ngrok.com
 ```
 
 ### Cas d'échec
@@ -109,9 +120,24 @@ Le script est traduit en français et anglais, et il affiche des messages d'erre
 
 ## Installation
 
-TODO: pour l'instant, pas assez stable pour être installé nulle part !
+> Uniquement testé sur ma machine, avec Ubuntu 18.04.
+>
+> - Ca ne marchera probablement PAS sous Windows ou Mac.
+> - Ca marchera peut-être sous d'autres GNU/Linux, ou *NIX-like.
 
-### Manuellement ?
+### Prérequis !
+
+Suivez ces instructions :
+
+- Il faut avoir Python 3, et `virtualenv` (dans la librairie standard) ;
+- Il faut avoir `curl` et GNU `make` (normalement présent, sinon `sudo apt get curl make`) ;
+- Il faut suivre les instructions [d'installation de Camisole](https://camisole.prologin.org/installation.html), avec l'option la plus sécurisée qui est avec une VM ;
+- Démarrez la VM, connectez-vous, changez le mot de passe (`$ passwd`, ancien mot de passe, nouveau mot de passe deux fois) ;
+- Depuis votre bureau, vérifiez que <http://localhost:42920/> est bien accessible, que <http://localhost:42920/languages> donne une liste de langages avec au moins Python, C et OCaml, et que <http://localhost:42920/system> est cohérent ;
+- Faites `make test_api` pour vérifier que la VM peut bien exécuter des petits codes Python, OCaml et C ;
+- Si tout est bon, étape suivante !
+
+### Cette application Flask
 
 Facile !
 Cloner ce dépôt, aller dans le dossier, et utilisez le directement, sans le copier ailleurs.
@@ -135,6 +161,9 @@ Cloner ce dépôt, aller dans le dossier, et utilisez le directement, sans le co
    # check that it works by going to http//localhost:5000 it should say hi and direct you to your https://www.twilio.com/console/ dashboard, and activate redirect to http://CHANGE.io
    ```
 
+   Maintenant, si tout a bien marché, ouvrez votre navigateur sur <http://localhost:42920/test/python>, <http://localhost:42920/test/ocaml> ou <http://localhost:42920/test/c> pour tester l'exécution de code via Camisole.
+   Si ça marche, vous êtes prêt-e à passer à l'étape suivante :
+
 - Exécutions suivantes :
 
    ```
@@ -144,28 +173,57 @@ Cloner ce dépôt, aller dans le dossier, et utilisez le directement, sans le co
    # test it, using phone number!
    ```
 
+   Maintenant, si tout a bien marché, ouvrez votre navigateur sur <https://TRUC.ngrok.io/test/python>, <https://TRUC.ngrok.io/test/ocaml> ou <https://TRUC.ngrok.io/test/c> pour tester l'exécution de code via Camisole, depuis n'importe OU sur Internet !
+   **Gardez ce lien toujours privé !**
+   Si ça marche, vous êtes prêt-e à passer à l'étape suivante :
+
+### Connexion avec Twilio
+
+> Lisez l'article <https://www.fullstackpython.com/blog/respond-sms-text-messages-python-flask.html> pour plus de détails.
+
+- Créez un compte d'essai Twilio. Il faut un mail valide, et un numéro de téléphone valide.
+
+- Créer un numéro de téléphone Twilio. Il faut remplir quelques informations légales et téléverser une preuve d'identité, e.g., un passeport (ou un échantillon sanguin 🤔).
+
+- Accédez à [l'écran de gestion des numéros de téléphone](https://www.twilio.com/console/phone-numbers) et cliquez sur le numéro de téléphone que vous souhaitez configurer pour répondre aux messages texte entrants.
+
+- Faites défiler vers le bas jusqu'à près du bas de la page et recherchez l'en-tête "Messagging". Modifiez la zone de texte "A Message Comes in" afin qu'elle ait votre URL de transfert ngrok plus la route "/twilio", comme indiqué dans cette capture d'écran.
+
+![respond-sms-python-flask/number-configuration.png](https://www.fullstackpython.com/img/160530-respond-sms-python-flask/number-configuration.png)
+
+- Relancez l'appli Flask, tout en ayant encore la VM Camisole ouverte, évidemment :
+
+   ```
+   # if this works, kill it, and restart with launching ngrok
+   make server
+   # test it, using phone number!
+   ```
+
+   Maintenant, si tout a bien marché, 🎉 vous pouvez envoyer un SMS au format suivant au numéro Twilio, et l'appli Flask va vous répondre, en passant par le tunnel ngrok !
+
+   TODO: format SMS
+
+   TODO: capture d'écran réussite !
+
+TODO: je n'ai pas encore pu tester cette partie, mais je le fais dès que mon numéro Twilio aura été activé !
+
+
 > Si quelque chose ne fonctionne pas bien, merci [de signaler un problème](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/new) :clap: !
 
-### Avec `pip` ? :warning: TODO
+### Avec `pip` ? Non.
 
-Ce projet ne sera **pas** distribué sur [le dépôt de packet Pypi](https://pypi.org/), mais il peut être installé directement depuis GitHub avec [`pip`](http://pip.pypa.io/) et cette commande :
+Ce projet ne sera **pas** distribué sur [le dépôt de packet Pypi](https://pypi.org/), et je ne souhaite pas qu'il puisse être installé directement depuis GitHub avec [`pip`](http://pip.pypa.io/).
 
-```bash
-sudo pip install git+https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS
-```
-
-TODO: pas terminé, à faire !
-
-Vérifiez que vous utilisez `pip3` et pas `pip2` selon la version de Python pour laquelle vous voulez installer cet outil. ([Python 2 n'est plus supporté](https://pythonclock.org/))
-
-![PyPI implementation](https://img.shields.io/pypi/implementation/lempel_ziv_complexity.svg)
-TODO:
+![PyPI implementation TODO](https://img.shields.io/pypi/implementation/lempel_ziv_complexity.svg)
 
 ----
 
 ## Comparaison à d'autres projets
 
-- TODO: ?
+> Si je me suis ~~embêté~~ amusé à faire ça moi-même, croyez bien que c'est parce que je n'ai rien trouvé d'équivalent !
+> Mais je suis curieux, [envoyez moi un mail](https://perso.crans.org/besson/callme.fr.html) ou [ouvrez un ticket](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/new) si vous connaissez une autre solution !
+
+- TODO
 
 ----
 
@@ -173,7 +231,13 @@ TODO:
 
 ### Langage et version(s) ?
 
-Écrit en [Python v3.6+](https://www.python.org/3/) (version CPython).
+Écrit en [Python v3.6+](https://www.python.org/3/) (version CPython), et bien en se basant sur de super projets libres et gratuits :
+
+- Avec [Flask v1.1](https://flask.palletsprojects.com/en/1.1.x/) ;
+- Avec [l'API officielle Python de Twilio](https://www.twilio.com/docs/libraries/python) (gratuit, mais payant pour avoir un numéro de téléphone, évidemment !) ;
+- Avec [Camisole v1.0](https://camisole.prologin.org/) de [Prologin](https://prologin.org/) ;
+- Avec [ngrok](https://ngrok.com/) ;
+- Et avec amour !
 
 ### :scroll: Licence ? [![GitHub licence](https://img.shields.io/github/license/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.svg)](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/blob/master/LICENSE)
 
@@ -182,10 +246,7 @@ Ce script et cette documentation sont distribuées en accès libre selon les con
 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/graphs/commit-activity)
 [![Demandez moi n'importe quoi !](https://img.shields.io/badge/Demandez%20moi-n'%20importe%20quoi-1abc9c.svg)](https://GitHub.com/Naereen/ama.fr)
-[![Analytics](https://ga-beacon.appspot.com/UA-38514290-17/github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/README.md?pixel)](https://GitHub.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/)
-
 [![ForTheBadge uses-badges](http://ForTheBadge.com/images/badges/uses-badges.svg)](http://ForTheBadge.com)
 [![ForTheBadge uses-git](http://ForTheBadge.com/images/badges/uses-git.svg)](https://GitHub.com/)
-
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 [![ForTheBadge built-with-swag](http://ForTheBadge.com/images/badges/built-with-swag.svg)](https://GitHub.com/Naereen/)

@@ -15,6 +15,8 @@
 import os.path
 # Use time get string for today current hour
 import time
+# to launch a random test
+import random
 # To parse the password from the message
 import re
 from pprint import pprint
@@ -150,11 +152,11 @@ def format_reply(language: str, stdout: str, stderr: str, exitcode=0) -> str:
 
 
 # ============== Test the API for two main languages ==============
-from first_tests import *
+import first_tests
 
 def test_backend() -> None:
     """ Test the API for two main languages."""
-    for first_test in FIRST_TESTS:
+    for first_test in first_tests.FIRST_TESTS:
         print(f"\nDEBUG: trying to use this JSON request:\n{first_test}")
         inputcode = first_test["inputcode"]
         language = first_test["language"]
@@ -190,17 +192,36 @@ def inbound_sms() -> Tuple[Response, int]:
     str_languages = ", ".join(SUPPORTED_LANGUAGES)
     return Response(f"La liste des langues prises en charge est : {str_languages}"), 200
 
+@app.route("/test")
+def inbound_sms() -> Tuple[Response, int]:
+    return Response(f"Open one of these links: /test/python, /test/ocaml or /test/c to test the code execution API"), 200
 
 @app.route("/test/python")
 def inbound_sms() -> Tuple[Response, int]:
-
-    inbound_message = inbound_message.replace("{language}:", "", 1).lstrip()
-    
-    stdout, stderr, exitcode = execute_code(inbound_message, language=language)
+    language = "python"
+    random_test = random.choice(first_tests.TESTS_PYTHON)["inputcode"]
+    stdout, stderr, exitcode = execute_code(random_test, language=language)
     reply = format_reply(language, stdout, stderr, exitcode=exitcode)
-
     return Response(reply), 200
 
+@app.route("/test/ocaml")
+def inbound_sms() -> Tuple[Response, int]:
+    language = "ocaml"
+    random_test = random.choice(first_tests.TESTS_OCAML)["inputcode"]
+    stdout, stderr, exitcode = execute_code(random_test, language=language)
+    reply = format_reply(language, stdout, stderr, exitcode=exitcode)
+    return Response(reply), 200
+
+@app.route("/test/c")
+def inbound_sms() -> Tuple[Response, int]:
+    language = "c"
+    random_test = random.choice(first_tests.TESTS_C)["inputcode"]
+    stdout, stderr, exitcode = execute_code(random_test, language=language)
+    reply = format_reply(language, stdout, stderr, exitcode=exitcode)
+    return Response(reply), 200
+
+
+# ============ now the Twilio part ============
 
 @app.route("/twilio", methods=["POST"])
 def inbound_sms() -> Tuple[Response, int]:
@@ -210,7 +231,7 @@ def inbound_sms() -> Tuple[Response, int]:
     inbound_message = request.form.get("Body")
     # we can now use the incoming message text in our Python application
 
-    # TODO: add a password
+    # DONE add a password
     if has_password(inbound_message):
         return Response("No password! Add a password by starting your SMS with pw:PASSWORD, with no space!"), 500
     password = parse_password(inbound_message)

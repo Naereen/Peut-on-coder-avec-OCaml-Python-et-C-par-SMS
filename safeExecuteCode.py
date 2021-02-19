@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # Link between python API/code to a Camisole server running in a VM, accessible by "http://localhost:42920/"
-# for https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS
 # Author: Lilian BESSON
 # Email: lilian DOT besson AT crans D O T org
 # Version: 1
@@ -30,9 +29,9 @@ def post_request_to_camisole(data,
         protocol=PROTOCOL,
         port=PORT,
         address=ADDRESS,
-        endpoint="",
+        endpoint="run",
         url=None,
-        use_json=True,
+        use_json=False,
     ):
     """ Post data as a JSON object to the URL and returns JSON response."""
     if not url:
@@ -46,11 +45,20 @@ def post_request_to_camisole(data,
         json_data = data
         if use_json:
             json_data = json.dumps(data)
-            print(f"DEBUG: forcing data to be JSON: json_data = {json_data}")
+            print(f"DEBUG: forcing data to be JSON: json_data = '{json_data}'")
         print(f"DEBUG: making this request...")
+        print(f"DEBUG: requests.post(url='{url}', json='{json_data}')...")
+        print(f"DEBUG: types: url='{type(url)}', json='{type(json_data)}')...")
         result = requests.post(url=url, json=json_data)
         print(f"DEBUG: got a result from this request...")
-        result_data = result.json()
+        print(f"  DEBUG: result = {result}")
+        print(f"  DEBUG: result.status_code = {result.status_code}")
+        print(f"  DEBUG: result.text = {result.text}")
+        try:
+            result_data = result.json()
+        except json.JSONDecodeError as e:
+            print(f"Error:\n{e}")
+            result_data = result.text
         pprint(result_data)
         print(f"DEBUG: result_data of length {len(result_data)}")
         return result_data
@@ -88,19 +96,36 @@ def safe_execute_code(inputcode,
         "lang": str(language),
         "source": str(inputcode),
         # https://camisole.prologin.org/usage.html#adding-limits-and-quotas
+        # Documentation:
+# time: limit the user time of the program (seconds)
+# wall-time: limit the wall time of the program (seconds)
+# extra-time: grace period before killing a program after it exceeded a time limit (seconds)
+# mem: limit the available memory of each process (kilobytes)
+# virt-mem: limit the address space of each process (kilobytes)
+# fsize: limit the size of files created by the program (kilobytes)
+# processes: limit the number of processes and/or threads
+# quota: limit the disk quota to a number of blocks and inodes (separate both numbers by a comma, eg. 10,30)
+# stack: limit the stack size of each process (kilobytes)
+        #
         "compile": {
-            "wall-time": 10,
-            "fsize": 4096,
-            "mem": 100000,
+            "time": 30,
+            "wall-time": 60,
+            "extra-time": 15,
+            "processes": 64,
+            # "quota": "50,3",
+            "fsize": 10_000,
+            "stack": 10_000,
+            "mem": 100_000,
         },
         "execute": {
             "time": 30,
             "wall-time": 60,
-            "processes": 1,
-            "quota": "50,3",
-            "fsize": 256,
-            "stack": 9000,
-            "mem": 100000,
+            "extra-time": 15,
+            "processes": 64,
+            # "quota": "50,3",
+            "fsize": 10_000,
+            "stack": 10_000,
+            "mem": 100_000,
         }
     }
     return post_request_to_camisole(data,

@@ -210,7 +210,7 @@ Cloner ce dépôt, aller dans le dossier, et utilisez le directement, sans le co
    ```
 
    ```
-   pw:PASSWORD c: #include <stdio.h>;\n/* Say hello */\nint main(int argc, char** argv) {\nprintf("Hello world from C!");\nreturn 0;\n}"
+   pw:PASSWORD c: #include <stdio.h>;\n/* Say hello */\nint main(void) {\nprintf("Hello world from C!");\nreturn 0;\n}"
    ```
 
    TODO: format SMS possible sur plusieurs lignes, pour le C notamment ?
@@ -227,6 +227,9 @@ TODO: je n'ai pas encore pu tester cette partie, mais je le fais dès que mon nu
 
 - Au lancement de l'appli Flask, le programme vérifie que le mot de passe (encodé en base64 comme un fichier local) est bien présent dans `.password.b64` : ne le donnez à personne, ne l'envoyez pas sur un Git, ou [en ligne](https://perso.crans.org/besson/publis/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git/.password.b64) ;
 - Au lancement, l'appli teste pour voir que la connexion avec la VM Camisole fonctionne bien, et qu'elle est capable d'exécuter du code Python, OCaml et C .
+- Quand quelque chose se passe mal, la console dans laquelle on a lancé l'appli Flask affiche plein de choses. Essayez de régler ça vous même, sinon [ouvrez un ticket !](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/new).
+- Malgré la VM, et les précautions, ce n'est PAS DU TOUT SÉCURISÉ ! Ne testez pas les limites du système, je ne saurai tenu responsable de RIEN !
+- Regardez [`Tests.md`](./Tests.md) pour plus d'informations sur des entrées/sorties qui devraient être sécurisées ! TODO: tester ça !
 
 ---
 

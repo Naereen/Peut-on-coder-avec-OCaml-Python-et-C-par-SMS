@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Flask server for https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS
+# Flask server for the application
 # Author: Lilian BESSON
 # Email: lilian DOT besson AT crans D O T org
 # Version: 1
@@ -12,6 +12,7 @@
 #
 
 # Use time to sleep and get string for today current hour
+import json
 import os.path
 # Use time get string for today current hour
 import time
@@ -105,9 +106,13 @@ def execute_code(inputcode: str, language="python") -> Tuple[str, str, int]:
         pprint(json_result)  # DEBUG
         if not json_result["success"]:
             raise FailedExecution
-        stdout = json_result["stdout"]
-        stderr = json_result["stderr"]
-        exitcode = json_result["exitcode"]
+
+        first_result = json_result
+        if "tests" in json_result:
+            first_result = json_result["tests"][0]
+        stdout = first_result["stdout"]
+        stderr = first_result["stderr"]
+        exitcode = first_result["exitcode"]
         # Example of a correct reply:
         # {
         #     "success": true,
@@ -123,9 +128,12 @@ def execute_code(inputcode: str, language="python") -> Tuple[str, str, int]:
 
     except Exception as e:
         print("Error:\n", e)
-        stderr = f"Camisole VM was not probably available, check the configuration.\ncurl {URL}/\ncurl {URL}/system\ncurl {URL}/languages"
+        stderr = f"Camisole VM was probably not available, check the configuration.\n$ curl {URL}/\n$ curl {URL}/system\n$ curl {URL}/languages"
         stderr += f"\n\nError: {e}"
         exitcode = 1
+        # only for DEBUG, kill the server and print the calltrace
+        if DEBUG:
+            raise e
 
     # now we are done, give this back to Flask API
     return stdout, stderr, exitcode
@@ -172,32 +180,55 @@ if __name__ == '__main__':
 
 # ================== now the Flask app ==================
 
-app = Flask(__name__)
+app = Flask("Peut on coder avec OCaml Python et C par SMS ?")
 
 
 @app.route("/")
 def check_app() -> Tuple[Response, int]:
     # returns a simple string stating the app is working
-    return Response("It works! The local server is ready!\nNo, go to your Twilio page TODO:\nRead documentation on https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git if needed"), 200
+    return Response("""
+<h1>« Peut on coder avec OCaml Python et C par SMS ? »</h1>
+It works! The local server is ready!
 
+This API has the following end-points:
+<ul>
+<li><a href="http://localhost:5000/">Home (documentation)</a> ;</li>
+<li><a href="http://localhost:5000/languages">Lists available programming languages</a> ;</li>
+<li><a href="http://localhost:5000/langages">Liste les langages de programmation supporté</a> ;</li>
+<li>And to test at one of the three supported languages, use:<ul>
+    <li><a href="http://localhost:5000/test/python">Test Python language (random test)</a> ;</li>
+    <li><a href="http://localhost:5000/test/ocaml">Test OCaml language (random test)</a> ;</li>
+    <li><a href="http://localhost:5000/test/c">Test C language (random test)</a> ;</li>
+    </ul></li>
+</ul>
+
+Now, <a href="https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git">go to read documentation to conclude your setup</a>.
+Enjoy!
+
+<br>
+This script and this documentation are distributed in open access according to the conditions of the <a href="https://lbesson.mit-license.org/">licence MIT</a>.
+© <a href="https://GitHub.com/Naereen">Lilian Besson</a>, 2021.
+"""), 200
 
 # return list of supported languages
 @app.route("/languages")
-def inbound_sms() -> Tuple[Response, int]:
+def app_route_language() -> Tuple[Response, int]:
     str_languages = ", ".join(SUPPORTED_LANGUAGES)
     return Response(f"List of supported languages are: {str_languages}"), 200
 
 @app.route("/langages")
-def inbound_sms() -> Tuple[Response, int]:
+def app_route_langage() -> Tuple[Response, int]:
     str_languages = ", ".join(SUPPORTED_LANGUAGES)
     return Response(f"La liste des langues prises en charge est : {str_languages}"), 200
 
 @app.route("/test")
-def inbound_sms() -> Tuple[Response, int]:
+def app_route_test() -> Tuple[Response, int]:
     return Response(f"Open one of these links: /test/python, /test/ocaml or /test/c to test the code execution API"), 200
 
+# TODO factor these /test/XXX endpints
+
 @app.route("/test/python")
-def inbound_sms() -> Tuple[Response, int]:
+def app_route_testpython() -> Tuple[Response, int]:
     language = "python"
     random_test = random.choice(first_tests.TESTS_PYTHON)["inputcode"]
     stdout, stderr, exitcode = execute_code(random_test, language=language)
@@ -205,7 +236,7 @@ def inbound_sms() -> Tuple[Response, int]:
     return Response(reply), 200
 
 @app.route("/test/ocaml")
-def inbound_sms() -> Tuple[Response, int]:
+def app_route_testocaml() -> Tuple[Response, int]:
     language = "ocaml"
     random_test = random.choice(first_tests.TESTS_OCAML)["inputcode"]
     stdout, stderr, exitcode = execute_code(random_test, language=language)
@@ -213,7 +244,7 @@ def inbound_sms() -> Tuple[Response, int]:
     return Response(reply), 200
 
 @app.route("/test/c")
-def inbound_sms() -> Tuple[Response, int]:
+def app_route_testc() -> Tuple[Response, int]:
     language = "c"
     random_test = random.choice(first_tests.TESTS_C)["inputcode"]
     stdout, stderr, exitcode = execute_code(random_test, language=language)

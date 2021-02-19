@@ -116,20 +116,33 @@ TODO: pour l'instant, pas assez stable pour être installé nulle part !
 Facile !
 Cloner ce dépôt, aller dans le dossier, et utilisez le directement, sans le copier ailleurs.
 
-```bash
-cd /tmp/
-git clone https://GitHub.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS
-cd Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/
-# set-up and install everything in a Python3 virtualenv
-make setupvenv
-# starts the Flask API, connects to and tests Camisole backend, and notify you of success
-make local
-# check that it works by going to http//localhost:5000 it should say hi and direct you to your https://www.twilio.com/console/ dashboard, and activate redirect to http://CHANGE.io
-# if this works, kill it, and restart with launching ngrok
-make server
-# add ngrok webhook to https://www.twilio.com/console/phone-numbers
-# test it, using phone number!
-```
+- *Remarque* : si le mot de passe n'existe pas encore, il faudra le créer lors du premier lancement du service. Le [Makefile](./Makefile) automatise cela, mais si jamais :
+
+   ```bash
+   echo "password" | base64 > .password.b64
+   ```
+
+- Première exécution :
+
+   ```bash
+   cd /tmp/
+   git clone https://GitHub.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS
+   cd Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/
+   # set-up and install everything in a Python3 virtualenv
+   make setupvenv
+   # starts the Flask API, connects to and tests Camisole backend, and notify you of success
+   make local
+   # check that it works by going to http//localhost:5000 it should say hi and direct you to your https://www.twilio.com/console/ dashboard, and activate redirect to http://CHANGE.io
+   ```
+
+- Exécutions suivantes :
+
+   ```
+   # if this works, kill it, and restart with launching ngrok
+   make server
+   # add ngrok webhook to https://www.twilio.com/console/phone-numbers
+   # test it, using phone number!
+   ```
 
 > Si quelque chose ne fonctionne pas bien, merci [de signaler un problème](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/new) :clap: !
 

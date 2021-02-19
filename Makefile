@@ -14,9 +14,9 @@ URL           = $(PROTOCOL)://$(ADDRESS):$(PORT)
 
 # ============== Rules for help ==============
 
-all:	ngrok notify start
 local:	notify start
-total:	all clean
+server:	ngrok notify start
+all:	server clean
 
 # ============== Rules for start server ==============
 
@@ -55,21 +55,21 @@ help:
 	@echo "Help for utilities (by Lilian BESSON, https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git)"
 	@echo "Please use 'make <target>' where <target> is one of"
 	@echo "  setupvenv  to set-up and install requirements in a Python3 virtualenv"
-	@echo "  total      to do everything"
+	@echo "  server     to do everything"
 	@echo "  local      to do local only"
 	@echo "  test_hello_api connects and tests Camisole backend"
-	@echo "  test_hello_api connects and tests Camisole backend"
+	@echo "  test_api   connects and tests Camisole backend"
 	@echo "  notify     to notify that the server is ready"
-	@echo "  clean      to COMPLETELY clean the temp files."
+	@echo "  clean      to clean the temp files."
 	@echo "  ngrok      if the local server is ready, open it to the world with https://ngrok.com"
 
 # ============== Rules to send this online ==============
 
 send:	send_zamok
 send_zamok:	clean-temp
-	CP --exclude=./.git/ ./ ${Szam}Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git/
+	CP --exclude=./.git/ --exclude=./venv3/ ./ ${Szam}publis/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git/
 send_local:	clean-temp
-	CP --exclude=./.git/ ./ ~/Public/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git/
+	CP --exclude=./.git/ --exclude=./venv3/ ./ ~/Public/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git/
 
 # ===================== Virtualenv =====================
 
@@ -83,7 +83,7 @@ install_requirements:
 
 notify:
 	notify-send "Local Peut-on-coder-avec-OCaml-Python-et-C-par-SMS ready\nGo to http://localhost:5000/"
-	xdg-open http://localhost:5000/
+	xdg-open http://localhost:5000/ &
 
 
 # ===================== Cleaners =====================

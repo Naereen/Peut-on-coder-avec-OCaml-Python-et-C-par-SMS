@@ -12,11 +12,13 @@
 #
 
 # Use time to sleep and get string for today current hour
+import os.path
+# Use time get string for today current hour
 import time
 # To parse the password from the message
 import re
 from pprint import pprint
-from typing import List, Tuple
+from typing import Tuple
 
 # Use base64 to not keep plaintext files of the number, username and password in your home
 import base64
@@ -25,6 +27,10 @@ from flask import Flask, Response, request
 from twilio import twiml
 
 from safeExecuteCode import safe_execute_code, URL, SUPPORTED_LANGUAGES
+
+# Turn to True if DEBUG mode
+DEBUG = False
+DEBUG = True
 
 
 # DONE: read from .password.b64 file
@@ -45,30 +51,38 @@ def read_b64_file(name: str) -> str:
         return None
 
 
+PASSWORD_FILE = ".password.b64"
 PASSWORD = "1234"
-PASSWORD = read_b64_file(".password.b64")
-# TODO: create password file
+if not os.path.exists(PASSWORD_FILE):
+    print(f"\nPassword file '{PASSWORD_FILE}' does not exist, please enter a password!")
+    local_password = input("Password= ")
+    # TODO real password input? Flemme! so not important
+    with open(PASSWORD_FILE, "w") as file:
+        print(base64.encodebytes(local_password.encode()), file=file, flush=True)
+
+PASSWORD = read_b64_file(PASSWORD_FILE)
 if PASSWORD is None:
     PASSWORD = "1234"
 
 print(f"Using password = {PASSWORD}...")
 
 
-
 def has_password(message: str) -> bool:
+    """ Checks for presence of a password in message, in the form of `pw:SOMEPASSWORDNOSPACE`."""
     res = re.search("pw:([^ ]+)", message)
     return res is not None
 
 def parse_password(message: str) -> str:
+    """ Returns password in message, in the form of `pw:SOMEPASSWORDNOSPACE`."""
     res = re.search("pw:([^ ]+)", message)
     if res:
         password = res.group(0)
         password = password.replace("pw:", "", 1)
         return password
-    # TODO: finish this function
     return ""
 
 def check_password(password: str) -> bool:
+    """ Checks if password in message is correct."""
     return password == PASSWORD
 
 
@@ -136,25 +150,7 @@ def format_reply(language: str, stdout: str, stderr: str, exitcode=0) -> str:
 
 
 # ============== Test the API for two main languages ==============
-
-FIRST_TESTS = [
-    {
-        "inputcode" : "print('Camisole backend works for Python!')",
-        "language" : "python"
-    },
-    {
-        "inputcode" : "print(f'The answer to life is = {4*10+2}')",
-        "language" : "python"
-    },
-    {
-        "inputcode": "print_endline 'Camisole backend works for OCaml!';;",
-        "language": "ocaml",
-    },
-    {
-        "inputcode": "Format.printf 'The answer to life is = %d' (4*10+2);;",
-        "language": "ocaml",
-    },
-]
+from first_tests import *
 
 def test_backend() -> None:
     """ Test the API for two main languages."""
@@ -180,7 +176,30 @@ app = Flask(__name__)
 @app.route("/")
 def check_app() -> Tuple[Response, int]:
     # returns a simple string stating the app is working
-    return Response("It works! The local server is ready!\nNo, go to your Twilio page "), 200
+    return Response("It works! The local server is ready!\nNo, go to your Twilio page TODO:\nRead documentation on https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git if needed"), 200
+
+
+# return list of supported languages
+@app.route("/languages")
+def inbound_sms() -> Tuple[Response, int]:
+    str_languages = ", ".join(SUPPORTED_LANGUAGES)
+    return Response(f"List of supported languages are: {str_languages}"), 200
+
+@app.route("/langages")
+def inbound_sms() -> Tuple[Response, int]:
+    str_languages = ", ".join(SUPPORTED_LANGUAGES)
+    return Response(f"La liste des langues prises en charge est : {str_languages}"), 200
+
+
+@app.route("/test/python")
+def inbound_sms() -> Tuple[Response, int]:
+
+    inbound_message = inbound_message.replace("{language}:", "", 1).lstrip()
+    
+    stdout, stderr, exitcode = execute_code(inbound_message, language=language)
+    reply = format_reply(language, stdout, stderr, exitcode=exitcode)
+
+    return Response(reply), 200
 
 
 @app.route("/twilio", methods=["POST"])
@@ -224,7 +243,7 @@ def inbound_sms() -> Tuple[Response, int]:
 
                 inbound_message = inbound_message.replace("{language}:", "", 1).lstrip()
                 stdout, stderr, exitcode = execute_code(inbound_message, language=language)
-                reply = format_reply(language, stdout, stderr)
+                reply = format_reply(language, stdout, stderr, exitcode=exitcode)
 
                 response.message(reply)
                 break
@@ -237,4 +256,4 @@ def inbound_sms() -> Tuple[Response, int]:
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=DEBUG)

@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Test the Camisole backend for https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS
+# For all the ./json_tests/LANGUAGE/*.json files, the expected output is ONE line printing 42
+#
+# TODO: automatically produce the .json files if it's not present? flemme
+#
 # Author: Lilian BESSON
 # Email: lilian DOT besson AT crans D O T org
 # Version: 1
@@ -7,17 +11,21 @@
 # Web: https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git
 #
 
+# http://redsymbol.net/articles/unofficial-bash-strict-mode/
+set -euo pipefail
+
 URL="${1%/}"
 FOLDER="${2%/}"
 
-echo -e "\n\nReading JSON files from folder '${FOLDER}': \n"
+echo -e "\n\nReading JSON files from folder '${FOLDER}':"
 
 for f in "$FOLDER"/*.json; do
-    echo -e "\n\nLoad JSON file '${f}': \n"
-    echo curl --silent \
+    echo -e "\nLoad JSON file '${f}':"
+    curl --silent \
         -X POST -H "Content-Type: application/json" \
         --data @"${f}" \
         "${URL}/run" \
-        | cat
-        # | python3 -m json.tool
+        | python -m json.tool \
+        | grep -o '"stdout": "42"'
+        # | cat
 done

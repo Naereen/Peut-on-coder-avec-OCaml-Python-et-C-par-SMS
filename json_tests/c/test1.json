@@ -1,4 +1,4 @@
 {
     "lang": "c",
-    "source": "#include <stdio.h> /* Print 42 */ int main(int argc, char** argv) { int answer_to_life = 42; printf(\"%d\", answer_to_life); return 0; }"
+    "source": "#include <stdio.h>;\n/* Print 42 */\nint main(int argc, char** argv) {\nint answer_to_life = 42;\nprintf(\"%d\", answer_to_life);\nreturn 0;\n}"
 }

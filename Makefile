@@ -14,18 +14,18 @@ URL           = $(PROTOCOL)://$(ADDRESS):$(PORT)
 
 # ============== Rules for help ==============
 
-all:	ngrok notify start test_hello_api
-local:	notify start test_hello_api
+all:	ngrok notify start
+local:	notify start
 total:	all clean
 
 # ============== Rules for start server ==============
 
-start:
+start: test_api
 	./venv3/bin/python3 ./app.py
 
 ngrok:
 	# TODO: don't use my script, just use ngrok?
-	./start-ngrok.sh $(PROTOCOL) $(PORT)
+	./start-ngrok.sh $(PROTOCOL) $(PORT) &
 
 test_api:	test_hello_api test_python test_ocaml test_c
 test_hello_api:	hello_api system_api languages_api
@@ -38,15 +38,15 @@ languages_api:
 
 test_python:
 	echo "TODO: complete and add more examples!"
-	./test-backend.sh ./json_tests/python/
+	./test-backend.sh $(URL) ./json_tests/python/
 
 test_ocaml:
 	echo "TODO: complete and add more examples!"
-	./test-backend.sh ./json_tests/ocaml/
+	./test-backend.sh $(URL) ./json_tests/ocaml/
 
 test_c:
 	echo "TODO: complete and add more examples!"
-	./test-backend.sh ./json_tests/c/
+	./test-backend.sh $(URL) ./json_tests/c/
 
 
 #################################### Help #####################################

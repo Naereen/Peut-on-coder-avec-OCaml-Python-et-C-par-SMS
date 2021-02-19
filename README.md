@@ -61,21 +61,43 @@ Cela va vous envoyer un texto contenant la réponse de l'exécution de ce progra
 
 ![screenshots/example1.png](screenshots/example1.png)
 
-### Aide
+### Tester votre configuration
 
-L'usage du script est le suivant :
+Essayez les SMS suivants :
 
-```bash
-python app.py --help|-h | TODO: [server] [port]
+```text
+Input: test
+Output: It works!
 ```
 
-- Avec `-h` ou `--help`, affiche l'aide,
-- TODO:
+```text
+Input: Hello
+Output: Hello back to you from Python!
+```
 
-### Aide détaillée
+```text
+Input: Bonjour
+Output: Bien le bonjour depuis Python !
+```
+
+```text
+Input: Languages
+Output: List of supported languages are: c, ocaml,python
+```
+
+```text
+Input: Langages?"
+Output: La liste des langues prises en charge est : c, ocaml, python
+```
+
+TODO: make screenshots of this!
+
+### Aide
+
+Tout se fait avec un Makefile, donc l'aide aussi :
 
 ```bash
-$ ./app.py --help
+$ make help
 TODO:
 ```
 
@@ -98,9 +120,12 @@ Cloner ce dépôt, aller dans le dossier, et utilisez le directement, sans le co
 cd /tmp/
 git clone https://GitHub.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS
 cd Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/
+# set-up and install everything in a Python3 virtualenv
 make setupvenv
+# starts the Flask API, connects to and tests Camisole backend, and notify you of success
 make local
-# test it
+# check that it works by going to http//localhost:5000 it should say hi and direct you to your https://www.twilio.com/console/ dashboard, and activate redirect to http://CHANGE.io
+# if this works, kill it, and restart with launching ngrok
 make server
 # add ngrok webhook to https://www.twilio.com/console/phone-numbers
 # test it, using phone number!

@@ -11,6 +11,14 @@
 # See https://www.geeksforgeeks.org/get-post-requests-using-python/ for help on this HTTP client using a POST request
 import json
 import requests
+from requests.api import post
+
+# TODO: when importing the module, connect to VM, and list languages
+SUPPORTED_LANGUAGES = [
+    "python",
+    "ocaml",
+    "c",
+]
 
 PROTOCOL = "http"
 ADDRESS = "localhost"
@@ -21,19 +29,49 @@ def post_request_to_camisole(data,
         protocol=PROTOCOL,
         port=PORT,
         address=ADDRESS,
+        endpoint="",
         url=None,
+        use_json=True,
     ):
+    """ Post data as a JSON object to the URL and returns JSON response."""
     if not url:
-        url = f"{protocol}://{address}:{port}"
+        if endpoint:
+            endpoint = f"/{endpoint}"
+        url = f"{protocol}://{address}:{port}{endpoint}"
+    # TODO: use a real logger? Flemme
+    print(f"DEBUG: using url = {url}")
     try:
-        json_data = json.dumps(data)
+        print(f"DEBUG: reading data = {data}")
+        json_data = data
+        if use_json:
+            json_data = json.dumps(data)
+            print(f"DEBUG: forcing data to be JSON: json_data = {json_data}")
+        print(f"DEBUG: making this request...")
         result = requests.post(url=url, json=json_data)
-        return result.json()
+        print(f"DEBUG: got a result from this request...")
+        result_json = result.json()
+        pprint(result_json)
+        result_data = json.loads(result_json)
+        print(f"DEBUG: result_data = {result_data}")
+        return result_data
+
     except Exception as e:
         print(f"Error:\n{e}")
         return {
             "success": False,
         }
+
+# TODO: try to discover the list of supported languages
+try:
+    data = ""
+    result = post_request_to_camisole(data, use_json=False, endpoint="languages")
+    json_languages = result["languages"]
+    languages = list(d.keys())
+    SUPPORTED_LANGUAGES = languages
+except Exception as e:
+    print(f"Error:\n{e}")
+    raise e
+
 
 def safe_execute_code(inputcode,
         language="python",
@@ -42,6 +80,7 @@ def safe_execute_code(inputcode,
         address=ADDRESS,
         url=None
     ):
+    """ Ask Camisole to execute the <inputcode> written in <language>, and returns the JSON result from Camisole."""
     data = {
         "lang": str(language),
         "source": str(inputcode)

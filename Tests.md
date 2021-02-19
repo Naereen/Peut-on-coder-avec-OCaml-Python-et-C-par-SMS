@@ -84,6 +84,8 @@ Out[9]: 1.2.3.4
 
 ## En OCaml
 
+TODO: WARNING: camisole uses `ocamlopt` and not `ocaml` toplevel!
+
 - numériques (pour montrer que l'on peut s'en servir comme d'une petite calculatrice) ;
 
 ```ocaml

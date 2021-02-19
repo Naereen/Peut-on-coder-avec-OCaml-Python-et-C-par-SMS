@@ -16,7 +16,7 @@ Je souhaite pouvoir faire ça, depuis mon téléphone :
    - qu'il y ait ce mot de passe ;
    - qu'il y ait un numéro incrémental de cellule sortie : trois requêtes de suite seront `Out[1]: ...`, `Out[2]: ...`, `Out[3]: ...`, etc.
    - que ça fonctionne sans problème pour ces trois langages (voir plus ?) ;
-   - TODO: que l'exécution soit sécurisée, et isolée (voir [camisole](https://camisole.prologin.org/) ?) ;
+   - TODO: que l'exécution soit sécurisée, et isolée (voir [camisole](https://camisole.prologin.org/) avec [une VM](https://camisole.prologin.org/installation.html#vm-image) ?) ;
 
 5. Premières étapes :
    - que le code soit exécuté sur *ma machine* (ou sur un serveur distant quand ce sera prêt) ;

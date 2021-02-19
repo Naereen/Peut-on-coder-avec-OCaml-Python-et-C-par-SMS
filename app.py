@@ -22,6 +22,9 @@ import base64
 from flask import Flask, Response, request
 from twilio import twiml
 
+from safeExecuteCode import safe_execute_code, URL
+
+
 # DONE: read from .password.b64 file
 def read_b64_file(name):
     """ Open the local file <name>, read and decode (base64) and return its content.
@@ -66,9 +69,15 @@ def check_password(password):
 
 
 # TODO: be able to really execute code
-def execute_code(inputcode, language="Python"):
+def execute_code(inputcode, language="python"):
     stdout, stderr = "", ""
     stdout = f"You sent me this {language} code:\n{inputcode}"
+    try:
+        safe_execute_code(inputcode, language=language)
+    except Exception as e:
+        print("Error:\n", e)
+        stderr = f"Camisole VM was not probably available, check the configuration.\ncurl {URL}/\ncurl {URL}/system\ncurl {URL}/languages"
+        stderr += f"\n\nError: {e}"
     return stdout, stderr
 
 from collections import defaultdict
@@ -129,21 +138,21 @@ def inbound_sms():
     # TODO: factor this!?
     elif inbound_message.startswith("python:"):
         inbound_message = inbound_message.replace("python: ", "", 1)
-        language = "Python"
+        language = "python"
         stdout, stderr = execute_code(inbound_message, language=language)
         reply = format_reply(language, stdout, stderr)
         response.message(reply)
 
     elif inbound_message.startswith("ocaml:"):
         inbound_message = inbound_message.replace("ocaml: ", "", 1)
-        language = "OCaml"
+        language = "ocaml"
         stdout, stderr = execute_code(inbound_message, language=language)
         reply = format_reply(language, stdout, stderr)
         response.message(reply)
 
     elif inbound_message.startswith("c:"):
         inbound_message = inbound_message.replace("c: ", "", 1)
-        language = "C"
+        language = "c"
         stdout, stderr = execute_code(inbound_message, language=language)
         reply = format_reply(language, stdout, stderr)
         response.message(reply)

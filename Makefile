@@ -9,7 +9,9 @@ SHELL         = /usr/bin/env /bin/bash
 
 PROTOCOL      = http
 ADDRESS       = localhost
-PORT          = 42920
+PORT_BACKEND  = 42920
+URL_BACKEND   = $(PROTOCOL)://$(ADDRESS):$(PORT_BACKEND)
+PORT          = 5000
 URL           = $(PROTOCOL)://$(ADDRESS):$(PORT)
 
 # ============== Rules for help ==============
@@ -30,23 +32,23 @@ ngrok:
 test_api:	test_hello_api test_python test_ocaml test_c
 test_hello_api:	hello_api system_api languages_api
 hello_api:
-	curl --silent $(URL)
+	curl --silent $(URL_BACKEND)
 system_api:
-	curl --silent $(URL)/system | python -m json.tool
+	curl --silent $(URL_BACKEND)/system | python -m json.tool
 languages_api:
-	curl --silent $(URL)/languages | python -m json.tool
+	curl --silent $(URL_BACKEND)/languages | python -m json.tool
 
 test_python:
 	echo "TODO: complete and add more examples!"
-	./test-backend.sh $(URL) ./json_tests/python/
+	./test-backend.sh $(URL_BACKEND) ./json_tests/python/
 
 test_ocaml:
 	echo "TODO: complete and add more examples!"
-	./test-backend.sh $(URL) ./json_tests/ocaml/
+	./test-backend.sh $(URL_BACKEND) ./json_tests/ocaml/
 
 test_c:
 	echo "TODO: complete and add more examples!"
-	./test-backend.sh $(URL) ./json_tests/c/
+	./test-backend.sh $(URL_BACKEND) ./json_tests/c/
 
 
 #################################### Help #####################################
@@ -82,8 +84,8 @@ install_requirements:
 	./venv3/bin/pip3 install --upgrade --requirement=./requirements.txt
 
 notify:
-	notify-send "Local Peut-on-coder-avec-OCaml-Python-et-C-par-SMS ready\nGo to http://localhost:5000/"
-	xdg-open http://localhost:5000/ &
+	notify-send "Local Peut-on-coder-avec-OCaml-Python-et-C-par-SMS ready\nGo to $(URL)"
+	xdg-open $(URL) &
 
 
 # ===================== Cleaners =====================

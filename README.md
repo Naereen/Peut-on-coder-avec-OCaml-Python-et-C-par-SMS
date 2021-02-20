@@ -44,22 +44,21 @@ Quelques questions et réponse :
 
 3. **Où ça en est ?** ~~Juste une idée pour l'instant.~~ C'était une idée le vendredi 19 février vers 13h, c'était quasiment terminé le soir même !
 
-TODO: la suite n'est pas terminée !
-
 ## Exemples
 
 ### Usage simple
 
-1. [Installer ce projet](#Installation),
-2. Créer un compte [Twilio](https://www.twilio.com/try-twilio),
-3. Lancer le serveur avec `make local`, tester le,
-4. Si ça marche, essayez le serveur distant avec `make ngrok` et allez ajouter l'adresse ngrok du webhook dans [le panneau de contrôle Twilio](https://www.twilio.com/console/phone-numbers),
-5. Tester avec un exemple !
-6. Soyez tout content :+1: ! Et ajouter une [petite étoile](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/stargazers) :star: à ce projet !
+1. [Installer ce projet](#Installation) (détails plus bas) ;
+2. Créer un compte [Twilio](https://www.twilio.com/try-twilio), créer un numéro de téléphone Twilio (payant mais 15€ offert) ;
+3. Lancer le serveur avec `make local`, tester le ;
+4. Si ça marche, essayez le serveur distant avec `make ngrok` et allez ajouter l'adresse ngrok du webhook dans [le panneau de contrôle Twilio](https://www.twilio.com/console/phone-numbers) ;
+5. Tester avec des exemples :
+   - Par exemple `pw:PASSWORD python: print("Hello world from Python!")` (avec le mot de passe choisi, remplaçant PASSWORD)...
+   - Cela va vous envoyer un texto contenant la réponse de l'exécution de ce programme, si tout est bien configuré !
+   - Mais n'en abusez pas trop, chaque SMS envoyé et reçu coûte ~0.07€ ! C'est vraiment juste conçu pour « l'effet démo woooooaaa :heart_eyes: » !
+6. Soyez tout content :+1: ! Et ajouter une [petite étoile](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/stargazers) :star: à ce projet ! *Parlez en à vos collègues ou à vos camarades, je suis curieux de vos avis et vos idées !*
 
-Cela va vous envoyer un texto contenant la réponse de l'exécution de ce programme, si tout est bien configuré.
-
-![screenshots/example1.png](screenshots/example1.png)
+![screenshots/example-SMS-success.png](screenshots/example-SMS-success.png)
 
 ### Tester votre configuration
 
@@ -94,9 +93,11 @@ Output: La liste des langues prises en charge est : c, ocaml, python
 
 TODO: make screenshots of this!
 
+![screenshots/example-SMS-documentation.png](screenshots/example-SMS-documentation.png)
+
 ### Aide
 
-Tout se fait avec un Makefile, donc l'aide aussi :
+Tout se fait avec un [`Makefile`](./Makefile) (de GNU Make), donc l'aide aussi :
 
 ```bash
 $ make help
@@ -114,39 +115,34 @@ Please use 'make <target>' where <target> is one of
 
 ### Cas d'échec
 
-Le script est traduit en français et anglais, et il affiche des messages d'erreurs clairs selon les causes d'échec.
+Les scripts est écrit et anglais, et ils devraient afficher des messages d'erreurs clairs selon les causes d'échec.
+*Merci de signaler des bugs si vous en rencontrez, en précisant quelle version de Camisole, Flask, Twillio, et Python vous utilisez, et en incluant le message d'erreur entier. Merci d'avance :pray: !*
 
 ----
 
 ## Installation
 
-> Uniquement testé sur ma machine, avec Ubuntu 18.04.
+> Uniquement testé **quelques minutes** sur ma machine, avec Ubuntu 18.04.
 >
-> - Ca ne marchera probablement PAS sous Windows ou Mac.
-> - Ca marchera peut-être sous d'autres GNU/Linux, ou *NIX-like.
+> - Ca ne marchera **PAS** sous Windows ou Mac.
+> - Ca marchera **peut-être** sous d'autres GNU/Linux, ou *NIX-like... mais je ne sais pas.
 
-### Prérequis !
+### Prérequis
 
-Suivez ces instructions :
+Commencez par suivre ces instructions :
 
 - Il faut avoir Python 3, et `virtualenv` (dans la librairie standard) ;
 - Il faut avoir `curl` et GNU `make` (normalement présent, sinon `sudo apt get curl make`) ;
 - Il faut suivre les instructions [d'installation de Camisole](https://camisole.prologin.org/installation.html), avec l'option la plus sécurisée qui est avec une VM ;
 - Démarrez la VM, connectez-vous, changez le mot de passe (`$ passwd`, ancien mot de passe, nouveau mot de passe deux fois) ;
-- Depuis votre bureau, vérifiez que <http://localhost:42920/> est bien accessible, que <http://localhost:42920/languages> donne une liste de langages avec au moins Python, C et OCaml, et que <http://localhost:42920/system> est cohérent ;
+- Depuis votre bureau (pas depuis la VM), vérifiez que <http://localhost:42920/> est bien accessible, que <http://localhost:42920/languages> donne une liste de langages avec au moins Python, C et OCaml, et que <http://localhost:42920/system> est cohérent ;
 - Faites `make test_api` pour vérifier que la VM peut bien exécuter des petits codes Python, OCaml et C ;
 - Si tout est bon, étape suivante !
 
 ### Cette application Flask
 
-Facile !
+Facile à lancer !
 Cloner ce dépôt, aller dans le dossier, et utilisez le directement, sans le copier ailleurs.
-
-- *Remarque* : si le mot de passe n'existe pas encore, il faudra le créer lors du premier lancement du service. Le [Makefile](./Makefile) automatise cela, mais si jamais :
-
-   ```bash
-   echo "password" | base64 > .password.b64
-   ```
 
 - Première exécution :
 
@@ -161,8 +157,17 @@ Cloner ce dépôt, aller dans le dossier, et utilisez le directement, sans le co
    # check that it works by going to http//localhost:5000 it should say hi and direct you to your https://www.twilio.com/console/ dashboard, and activate redirect to http://CHANGE.io
    ```
 
-   Maintenant, si tout a bien marché, ouvrez votre navigateur sur <http://localhost:42920/test/python>, <http://localhost:42920/test/ocaml> ou <http://localhost:42920/test/c> pour tester l'exécution de code via Camisole.
-   Si ça marche, vous êtes prêt-e à passer à l'étape suivante :
+- *Remarque* : si le mot de passe n'existe pas encore, il faudra le créer lors du premier lancement du service. Le [Makefile](./Makefile) automatise cela, mais si jamais :
+
+   ```bash
+   echo "PASSWORD" | base64 > .password.b64
+   ```
+
+- Maintenant, si tout a bien marché, ouvrez votre navigateur sur <http://localhost:5000/test/python>, <http://localhost:5000/test/ocaml> ou <http://localhost:5000/test/c> pour tester l'exécution de code via Camisole.
+
+![./screenshots/demo-documentation-API-localhost.png](./screenshots/demo-documentation-API-localhost.png)
+
+Si ça marche, vous êtes prêt-e à passer à l'étape suivante :
 
 - Exécutions suivantes :
 
@@ -175,9 +180,12 @@ Cloner ce dépôt, aller dans le dossier, et utilisez le directement, sans le co
 
    Maintenant, si tout a bien marché, ouvrez votre navigateur sur <https://TRUC.ngrok.io/test/python>, <https://TRUC.ngrok.io/test/ocaml> ou <https://TRUC.ngrok.io/test/c> pour tester l'exécution de code via Camisole, depuis n'importe OU sur Internet !
    **Gardez ce lien toujours privé !**
-   Si ça marche, vous êtes prêt-e à passer à l'étape suivante :
+
+![./screenshots/demo-documentation-API-behind-ngrok.png](./screenshots/demo-documentation-API-behind-ngrok.png)
 
 ### Connexion avec Twilio
+
+Si ça marche, vous êtes prêt-e à passer à l'étape suivante :
 
 > Lisez l'article <https://www.fullstackpython.com/blog/respond-sms-text-messages-python-flask.html> pour plus de détails.
 
@@ -193,29 +201,39 @@ Cloner ce dépôt, aller dans le dossier, et utilisez le directement, sans le co
 
 - Relancez l'appli Flask, tout en ayant encore la VM Camisole ouverte, évidemment :
 
-   ```
-   # if this works, kill it, and restart with launching ngrok
-   make server
-   # test it, using phone number!
-   ```
+```
+# if this works, kill it, and restart with launching ngrok
+make server
+# test it, using phone number!
+```
 
-   Maintenant, si tout a bien marché, 🎉 vous pouvez envoyer un SMS au format suivant au numéro Twilio, et l'appli Flask va vous répondre, en passant par le tunnel ngrok !
+Maintenant, si tout a bien marché, 🎉 vous pouvez envoyer un SMS au format suivant au numéro Twilio, et l'appli Flask va vous répondre, en passant par le tunnel ngrok !
 
-   ```
-   pw:PASSWORD python: print("Hello world from Python!")
-   ```
+```python
+pw:PASSWORD python: print("Hello world from Python!")
+```
 
-   ```
-   pw:PASSWORD ocaml: print_endline "Hello world from OCaml!"
-   ```
+```ocaml
+pw:PASSWORD ocaml: print_endline "Hello world from OCaml!";;
+```
 
-   ```
-   pw:PASSWORD c: #include <stdio.h>;\n/* Say hello */\nint main(void) {\nprintf("Hello world from C!");\nreturn 0;\n}"
-   ```
+```c
+pw:PASSWORD c: #include <stdio.h>;\n/* Say hello */\nint main(void) {\nprintf("Hello world from C!");\nreturn 0;\n}"
+```
 
-   TODO: format SMS possible sur plusieurs lignes, pour le C notamment ?
+```c
+pw:PASSWORD c:
+#include <stdio.h>;
+/* Say hello */
+int main(void) {
+printf("Hello world from C!");
+return 0;
+}"
+```
 
-   TODO: capture d'écran réussite !
+Normalement, on peut écrire le code sur plusieurs lignes, pour le C notamment ? Dter!ONE: TODO: à tester
+
+TODO: capture d'écran réussite !
 
 
 TODO: je n'ai pas encore pu tester cette partie, mais je le fais dès que mon numéro Twilio aura été activé !
@@ -243,7 +261,7 @@ TODO: je n'ai pas encore pu tester cette partie, mais je le fais dès que mon nu
 - Automate creation of `.json` files from `.python`, `.ocaml`, `.c` files ;
 - When reading `input()` for password, use a "hidden" input like real password on UNIX ? Useless, but fun to try!
 - Allow any language supported by Camisole (Ada, C, C#, C++, D, Go, Haskell, Java, Javascript, Lua, OCaml, PHP, Pascal, Perl, Prolog, Python, Ruby, Rust, Scheme) ?
-- Clean up code ? It's already not bad.
+- ~~Clean up code?~~ It's already not bad.
 
 ### More TODO?
 

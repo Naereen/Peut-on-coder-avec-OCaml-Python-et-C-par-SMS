@@ -11,7 +11,7 @@
 # https://gist.github.com/mattmakai/8ab434ccb604d3ba5bde817a183e0bde
 #
 
-# Use time to sleep and get string for today current hour
+# Use to check if password file is present
 import json
 import os.path
 # Use time get string for today current hour
@@ -32,8 +32,11 @@ from twilio import twiml
 from safeExecuteCode import safe_execute_code, URL, SUPPORTED_LANGUAGES
 
 # Turn to True if DEBUG mode
+# DEBUG mode for a Flask app means that it automatically reloads when this file changes!
 DEBUG = False
 DEBUG = True
+
+today = time.strftime("%H:%M:%S %Y-%m-%d")
 
 
 # DONE: read from .password.b64 file
@@ -108,11 +111,40 @@ def execute_code(inputcode: str, language="python") -> Tuple[str, str, int]:
             raise FailedExecution
 
         first_result = json_result
-        if "tests" in json_result:
-            first_result = json_result["tests"][0]
-        stdout = first_result["stdout"]
-        stderr = first_result["stderr"]
-        exitcode = first_result["exitcode"]
+        if "compile" in json_result \
+            and "exitcode" in json_result["compile"] \
+            and json_result["compile"]["exitcode"] > 0:
+                compile_result = json_result["compile"]
+                stdout = compile_result["stdout"]
+                stderr = compile_result["stderr"]
+                exitcode = compile_result["exitcode"]
+        # Example of a reply of failed compilation:
+        # {'compile': {'exitcode': 1,
+        #         'meta': {'cg-mem': 8036,
+        #                 'cg-oom-killed': 0,
+        #                 'csw-forced': 12,
+        #                 'csw-voluntary': 4,
+        #                 'exitcode': 2,
+        #                 'exitsig': 0,
+        #                 'exitsig-message': None,
+        #                 'killed': False,
+        #                 'max-rss': 16532,
+        #                 'message': 'Exited with error status 2',
+        #                 'status': 'RUNTIME_ERROR',
+        #                 'time': 0.014,
+        #                 'wall-time': 0.027},
+        #         'stderr': 'File "/box/source.ml", line 1, characters 74-77:\n'
+        #                 'Error: This expression has type float but an '
+        #                 'expression was expected of type\n'
+        #                 '         int\n',
+        #         'stdout': ''},
+        # 'success': True}
+        else:
+            if "tests" in json_result:
+                first_result = json_result["tests"][0]
+            stdout = first_result["stdout"]
+            stderr = first_result["stderr"]
+            exitcode = first_result["exitcode"]
         # Example of a correct reply:
         # {
         #     "success": true,
@@ -173,7 +205,7 @@ def test_backend() -> None:
         print(f"DEBUG: got an answer with stdout, stderr, exitcode:\n{stdout}\n{stderr}\n{exitcode}")
         reply = format_reply(language, stdout, stderr)
         print(f"DEBUG: got a reply:\n{reply}")
-        assert exitcode == 0
+        # assert exitcode == 0
 
 if __name__ == '__main__':
     test_backend()
@@ -185,26 +217,38 @@ app = Flask("Peut on coder avec OCaml Python et C par SMS ?")
 
 @app.route("/")
 def check_app() -> Tuple[Response, int]:
-    # returns a simple string stating the app is working
+    # returns a detailed documentation of the app!
+    str_languages = ", ".join(SUPPORTED_LANGUAGES)
     return Response("""
 <h1>« Peut on coder avec OCaml Python et C par SMS ? »</h1>
 It works! The local server is ready!
-
-This API has the following end-points:
+TODO: test the SMS part now, when Twilio will give me my number!
+<h2>Documentation of this API</h2>
+This API has the following end-points, please try them!
 <ul>
-<li><a href="http://localhost:5000/">Home (documentation)</a> ;</li>
-<li><a href="http://localhost:5000/languages">Lists available programming languages</a> ;</li>
-<li><a href="http://localhost:5000/langages">Liste les langages de programmation supporté</a> ;</li>
-<li>And to test at one of the three supported languages, use:<ul>
+<li><a href="http://localhost:5000/languages">Lists available programming languages</a> : """ + str_languages + """ ;</li>
+<li><a href="http://localhost:5000/langages">Liste les langages de programmation supporté</a> : """ + str_languages + """ ;</li>
+<li>And to test one of the main three supported languages, use:<ul>
     <li><a href="http://localhost:5000/test/python">Test Python language (random test)</a> ;</li>
     <li><a href="http://localhost:5000/test/ocaml">Test OCaml language (random test)</a> ;</li>
     <li><a href="http://localhost:5000/test/c">Test C language (random test)</a> ;</li>
     </ul></li>
 </ul>
-
-Now, <a href="https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git">go to read documentation to conclude your setup</a>.
+Now, <a href="https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git">go read the documentation to conclude your setup</a> (in French, so far).
 Enjoy!
-
+<br>
+If all the API end-points work, and if you have a Twilio account, then start "ngrok" for HTTP tunneling, add the ngrok proxy address to your Twilio dashboard, and try to send some code to your Twilio phone number (using your own phone).
+<br>
+<h2>Format of SMS messages</h2>
+<ul>
+<li><code>pw:PASSWORD python: print("Hello world from Python!")</code></li>
+<li><code>pw:PASSWORD ocaml: print_endline "Hello world from OCaml!"</code></li>
+<li><code>pw:PASSWORD c: #include <stdio.h>;\n/* Say hello */\nint main(void) {\nprintf("Hello world from C!");\nreturn 0;\n}"</code></li>
+</ul>
+<b>Be aware that each SMS costs around 0.07€!</b>
+<hr>
+<h2>About this project</h2>
+Flask app started at """ + str(today) + """.
 <br>
 This script and this documentation are distributed in open access according to the conditions of the <a href="https://lbesson.mit-license.org/">licence MIT</a>.
 © <a href="https://GitHub.com/Naereen">Lilian Besson</a>, 2021.
@@ -223,7 +267,13 @@ def app_route_langage() -> Tuple[Response, int]:
 
 @app.route("/test")
 def app_route_test() -> Tuple[Response, int]:
-    return Response(f"Open one of these links: /test/python, /test/ocaml or /test/c to test the code execution API"), 200
+    return Response(f"""Open one of these links to test the code execution API:
+<ul>
+    <li><a href="http://localhost:5000/test/python">Test Python language (random test)</a> ;</li>
+    <li><a href="http://localhost:5000/test/ocaml">Test OCaml language (random test)</a> ;</li>
+    <li><a href="http://localhost:5000/test/c">Test C language (random test)</a> ;</li>
+</ul>
+"""), 200
 
 # TODO factor these /test/XXX endpints
 

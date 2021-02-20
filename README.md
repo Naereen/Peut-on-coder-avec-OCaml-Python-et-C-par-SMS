@@ -142,7 +142,7 @@ Commencez par suivre ces instructions :
 ### Cette application Flask
 
 Facile à lancer !
-Cloner ce dépôt, aller dans le dossier, et utilisez le directement, sans le copier ailleurs.
+Clonez ce dépôt, allez dans le dossier, et utilisez le directement, sans le copier ailleurs.
 
 - Première exécution :
 
@@ -154,7 +154,7 @@ Cloner ce dépôt, aller dans le dossier, et utilisez le directement, sans le co
    make setupvenv
    # starts the Flask API, connects to and tests Camisole backend, and notify you of success
    make local
-   # check that it works by going to http//localhost:5000 it should say hi and direct you to your https://www.twilio.com/console/ dashboard, and activate redirect to http://CHANGE.io
+   # check that it works by going to http//localhost:5000 it should say hi and direct you to your https://www.twilio.com/console/ dashboard, and activate redirect to https://CHANGE.ngrok.io/
    ```
 
 - *Remarque* : si le mot de passe n'existe pas encore, il faudra le créer lors du premier lancement du service. Le [Makefile](./Makefile) automatise cela, mais si jamais :
@@ -163,7 +163,7 @@ Cloner ce dépôt, aller dans le dossier, et utilisez le directement, sans le co
    echo "PASSWORD" | base64 > .password.b64
    ```
 
-- Maintenant, si tout a bien marché, ouvrez votre navigateur sur <http://localhost:5000/test/python>, <http://localhost:5000/test/ocaml> ou <http://localhost:5000/test/c> pour tester l'exécution de code via Camisole.
+- Maintenant, si tout a bien marché, ouvrez votre navigateur sur <http://localhost:5000/test/python>, <http://localhost:5000/test/ocaml> ou <http://localhost:5000/test/c> pour tester l'exécution de code via Camisole. Démonstration :
 
 ![./screenshots/demo-documentation-API-localhost.png](./screenshots/demo-documentation-API-localhost.png)
 
@@ -178,8 +178,10 @@ Si ça marche, vous êtes prêt-e à passer à l'étape suivante :
    # test it, using phone number!
    ```
 
-   Maintenant, si tout a bien marché, ouvrez votre navigateur sur <https://TRUC.ngrok.io/test/python>, <https://TRUC.ngrok.io/test/ocaml> ou <https://TRUC.ngrok.io/test/c> pour tester l'exécution de code via Camisole, depuis n'importe OU sur Internet !
-   **Gardez ce lien toujours privé !**
+   Maintenant, si tout a bien marché, ouvrez votre navigateur sur <https://TRUC.ngrok.io/test/python>, <https://TRUC.ngrok.io/test/ocaml> ou <https://TRUC.ngrok.io/test/c> pour tester l'exécution de code via Camisole, depuis n'importe QUEL APPAREIL CONNECTÉ à Internet !
+   **Gardez ce lien toujours privé !** Bon de toutes façon, il n'est valable que 2h avec l'offre gratuite de ngrok... mais en 2h, quelqu'un qui voudrait casser votre machine pourrait réussir !
+
+Demonstration :
 
 ![./screenshots/demo-documentation-API-behind-ngrok.png](./screenshots/demo-documentation-API-behind-ngrok.png)
 
@@ -231,12 +233,12 @@ return 0;
 }"
 ```
 
-Normalement, on peut écrire le code sur plusieurs lignes, pour le C notamment ? Dter!ONE: TODO: à tester
+Normalement, on peut écrire le code sur plusieurs lignes, pour le C notamment ? TODO: à tester
 
 TODO: capture d'écran réussite !
 
 
-TODO: je n'ai pas encore pu tester cette partie, mais je le fais dès que mon numéro Twilio aura été activé !
+TODO: je n'ai pas encore pu tester cette partie, mais je le fais dès que mon numéro Twilio aura été activé [ticket #1](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/1) !
 
 
 > Si quelque chose ne fonctionne pas bien, merci [de signaler un problème](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/new) :clap: !
@@ -245,7 +247,7 @@ TODO: je n'ai pas encore pu tester cette partie, mais je le fais dès que mon nu
 
 - Au lancement de l'appli Flask, le programme vérifie que le mot de passe (encodé en base64 comme un fichier local) est bien présent dans `.password.b64` : ne le donnez à personne, ne l'envoyez pas sur un Git, ou [en ligne](https://perso.crans.org/besson/publis/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.git/.password.b64) ;
 - Au lancement, l'appli teste pour voir que la connexion avec la VM Camisole fonctionne bien, et qu'elle est capable d'exécuter du code Python, OCaml et C .
-- Quand quelque chose se passe mal, la console dans laquelle on a lancé l'appli Flask affiche plein de choses. Essayez de régler ça vous même, sinon [ouvrez un ticket !](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/new).
+- Quand quelque chose se passe mal, la console dans laquelle on a lancé l'appli Flask affiche plein de choses. Essayez de régler ça vous même, sinon [ouvrez un ticket !](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/new)
 - Malgré la VM, et les précautions, ce n'est PAS DU TOUT SÉCURISÉ ! Ne testez pas les limites du système, je ne saurai tenu responsable de RIEN !
 - Regardez [`Tests.md`](./Tests.md) pour plus d'informations sur des entrées/sorties qui devraient être sécurisées ! TODO: tester ça !
 
@@ -258,10 +260,10 @@ TODO: je n'ai pas encore pu tester cette partie, mais je le fais dès que mon nu
 ### :boom: TODO
 
 - More tests from [`json_tests/`](json_tests/) folder ;
-- Automate creation of `.json` files from `.python`, `.ocaml`, `.c` files ;
+- Automate creation of `.json` files from `.python`, `.ocaml`, `.c` files (for these `json_tests`);
 - When reading `input()` for password, use a "hidden" input like real password on UNIX ? Useless, but fun to try!
-- Allow any language supported by Camisole (Ada, C, C#, C++, D, Go, Haskell, Java, Javascript, Lua, OCaml, PHP, Pascal, Perl, Prolog, Python, Ruby, Rust, Scheme) ?
-- ~~Clean up code?~~ It's already not bad.
+- Allow any language supported by Camisole (Ada, C, C#, C++, D, Go, Haskell, Java, Javascript, Lua, OCaml, PHP, Pascal, Perl, Prolog, Python, Ruby, Rust, Scheme) ? This is okay from backend, but frontend so far is manual.
+- ~~Clean up code?~~ It's already not bad :ok_hand:!
 
 ### More TODO?
 

@@ -36,6 +36,9 @@ from safeExecuteCode import safe_execute_code, URL, SUPPORTED_LANGUAGES
 DEBUG = False
 DEBUG = True
 
+# To avoid risking a HUGE Twilio bill, by default the server stops as soon as one language has received more than MAX_SMSNUMBER requests by SMS.
+MAX_SMSNUMBER = 10
+
 today = time.strftime("%H:%M:%S %Y-%m-%d")
 
 
@@ -173,13 +176,16 @@ def execute_code(inputcode: str, language="python") -> Tuple[str, str, int]:
 
 from collections import defaultdict
 cellnumbers = defaultdict(lambda: 0)
+smsnumber = 0
 
 def format_reply(language: str, stdout: str, stderr: str, exitcode=0) -> str:
     """ Format the reply to a nice message that can be printed or sent back by SMS."""
-    global cellnumbers
+    global cellnumbers, smsnumber
     today = time.strftime("%H:%M:%S %Y-%m-%d")
     cellnumbers[language] += 1
     cellnumber = cellnumbers[language]
+    smsnumber += 1
+    assert smsnumber <= MAX_SMSNUMBER, f"Error: cell number for language='{language}' reached the maximum {MAX_SMSNUMBER}, so stopping the server.\nThis is NOT a bug, it's a feature, to avoid huge Twilio bills!"
     if stderr and stdout:
         reply = f"""Time: {today}\nOut[{cellnumber}] {stdout}\nError[{cellnumber}] exitcode={exitcode} : {stderr}"""
     elif not stderr and stdout:

@@ -42,7 +42,11 @@ Quelques questions et réponse :
    - Avec l'API de Twilio, on peut connecter cette appli (ouverte avec ngrok) au numéro de téléphone (payant) fourni par le compte Twilio.
    - Avec tout ça, je peux exécuter (et voir la sortie et le code de retour) en envoyant un SMS à ce numéro.
 
-3. **Où ça en est ?** ~~Juste une idée pour l'instant.~~ C'était une idée le vendredi 19 février vers 13h, c'était quasiment terminé le soir même !
+3. **Où ça en est ?**
+   1. ~~Juste une idée pour l'instant.~~
+   2. ~~C'était une idée le vendredi 19 février vers 13h, c'était quasiment terminé le soir même !~~
+   3. Testé et fonctionnel avec toutes les fonctionnalités que j'espérais, en C, Python et OCaml !
+   4. TODO: il reste quelques trucs à faire, regardez les [tickets ouverts](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues), et les TODO: dans ce fichier. (et le code)
 
 ## Exemples
 
@@ -220,17 +224,13 @@ pw:PASSWORD ocaml: print_endline "Hello world from OCaml!";;
 ```
 
 ```c
-pw:PASSWORD c: #include <stdio.h>;\n/* Say hello */\nint main(void) {\nprintf("Hello world from C!");\nreturn 0;\n}"
-```
-
-```c
 pw:PASSWORD c:
-#include <stdio.h>;
+#include <stdio.h>
 /* Say hello */
 int main(void) {
 printf("Hello world from C!");
 return 0;
-}"
+}
 ```
 
 - Normalement, on peut écrire le code sur plusieurs lignes, pour le C notamment ! Ca marche sans problème !

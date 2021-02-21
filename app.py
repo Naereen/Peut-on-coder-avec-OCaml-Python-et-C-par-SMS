@@ -21,7 +21,7 @@ import random
 # To parse the password from the message
 import re
 from pprint import pprint
-from typing import Tuple
+from typing import Tuple, Union
 
 # Use base64 to not keep plaintext files of the number, username and password in your home
 import base64
@@ -43,11 +43,12 @@ DEBUG = True
 # To avoid risking a HUGE Twilio bill, by default the server stops as soon as one language has received more than MAX_SMSNUMBER requests by SMS.
 MAX_SMSNUMBER = 100
 
-today = time.strftime("%H:%M:%S %Y-%m-%d")
+def today():
+    return time.strftime("%H:%M:%S %Y-%m-%d")
 
 
 # DONE: read from .password.b64 file
-def read_b64_file(name: str) -> str:
+def read_b64_file(name: str) -> Union[None, str]:
     """ Open the local file <name>, read and decode (base64) and return its content.
     """
     try:
@@ -114,10 +115,11 @@ class FailedExecution(Exception):
 
 
 # TODO: be able to really execute code
-def execute_code(inputcode: str, language="python") -> Tuple[str, str, int]:
+def execute_code(inputcode: str, language="python") -> Tuple[str, str, int, dict]:
     print(f"DEBUG: You sent me this {language} code:\n{inputcode}")
     stdout, stderr = "", ""
     exitcode = 0
+    json_result = dict()
     stdout = f"You sent me this {language} code:\n{inputcode}"
 
     try:
@@ -185,7 +187,7 @@ def execute_code(inputcode: str, language="python") -> Tuple[str, str, int]:
             raise e
 
     # now we are done, give this back to Flask API
-    return stdout, stderr, exitcode
+    return stdout, stderr, exitcode, json_result
 
 
 from collections import defaultdict
@@ -195,17 +197,16 @@ smsnumber = 0
 def format_reply(language: str, stdout: str, stderr: str, exitcode=0, full_data=None) -> str:
     """ Format the reply to a nice message that can be printed or sent back by SMS."""
     global cellnumbers, smsnumber
-    today = time.strftime("%H:%M:%S %Y-%m-%d")
     cellnumbers[language] += 1
     cellnumber = cellnumbers[language]
     smsnumber += 1
     assert smsnumber <= MAX_SMSNUMBER, f"Error: cell number for language='{language}' reached the maximum {MAX_SMSNUMBER}, so stopping the server.\nThis is NOT a bug, it's a feature, to avoid huge Twilio bills!"
     if stderr and stdout:
-        reply = f"""Time: {today}\nOut[{cellnumber}] {stdout}\nError[{cellnumber}] exitcode={exitcode} : {stderr}"""
+        reply = f"""Time: {today()}\nOut[{cellnumber}] {stdout}\nError[{cellnumber}] exitcode={exitcode} : {stderr}"""
     elif not stderr and stdout:
-        reply = f"""Time: {today}\nOut[{cellnumber}] {stdout}"""
+        reply = f"""Time: {today()}\nOut[{cellnumber}] {stdout}"""
     elif stderr and not stdout:
-        reply = f"""Time: {today}\nError[{cellnumber}] exitcode={exitcode} : {stderr}"""
+        reply = f"""Time: {today()}\nError[{cellnumber}] exitcode={exitcode} : {stderr}"""
     else:
         # TODO: print compiler error if something failed?
         # {'success': True,
@@ -226,9 +227,9 @@ def format_reply(language: str, stdout: str, stderr: str, exitcode=0, full_data=
         #             'name': 'test000',
         #             'stderr': '',
         #             'stdout': ''}]
-        if full_data and "tests" in full_data and "meta" in full_data[0]:
-            warning_response = "TODO"
-            meta_data = full_data[0]["meta"]
+        if full_data and "tests" in full_data and "meta" in full_data["tests"][0]:
+            warning_response = "(empty default warning response)"  # TODO:
+            meta_data = full_data["tests"][0]["meta"]
             if "message" in meta_data:
                 warning_response = meta_data["message"]
                 if "(wall clock)" in warning_response and "wall-time" in meta_data:
@@ -237,9 +238,9 @@ def format_reply(language: str, stdout: str, stderr: str, exitcode=0, full_data=
                 if "(time clock)" in warning_response and "time" in meta_data:
                     time_clock = meta_data["time"]
                     warning_response = warning_response.replace("(time clock)", f"(time clock) (time = {time_clock})")
-            reply = f"""Time: {today}\nFailed compilation or execution, got this reply for cell number {cellnumber}\n{warning_response}"""
+            reply = f"""Time: {today()}\nFailed compilation or execution, got this reply for cell number {cellnumber}\n{warning_response}"""
         else:
-            reply = f"""Time: {today}\nNo output or error for cell number {cellnumber}"""
+            reply = f"""Time: {today()}\nNo output or error for cell number {cellnumber}"""
     return reply
 
 
@@ -253,11 +254,14 @@ def test_backend() -> None:
         inputcode = first_test["inputcode"]
         language = first_test["language"]
         print(f"\nDEBUG: trying to execute this code in language={language}:\n{inputcode}")
-        stdout, stderr, exitcode = execute_code(inputcode, language=language)
+        stdout, stderr, exitcode, _ = execute_code(inputcode, language=language)
         print(f"DEBUG: got an answer with stdout, stderr, exitcode:\n{stdout}\n{stderr}\n{exitcode}")
-        reply = format_reply(language, stdout, stderr)
+        reply = format_reply(language, stdout, stderr, full_data=first_test)
         print(f"DEBUG: got a reply:\n{reply}")
-        # assert exitcode == 0
+
+        # TODO: when starting the server, it's expected that all tests should work!
+        if not "What happens with a exitcode = 1 ?" in reply:
+            assert exitcode == 0
 
 if __name__ == '__main__':
     test_backend()
@@ -333,7 +337,7 @@ def app_route_test() -> Tuple[Response, int]:
 def app_route_testpython() -> Tuple[Response, int]:
     language = "python"
     random_test = random.choice(first_tests.TESTS_PYTHON)["inputcode"]
-    stdout, stderr, exitcode = execute_code(random_test, language=language)
+    stdout, stderr, exitcode, _ = execute_code(random_test, language=language)
     reply = format_reply(language, stdout, stderr, exitcode=exitcode)
     return Response(reply), 200
 
@@ -341,7 +345,7 @@ def app_route_testpython() -> Tuple[Response, int]:
 def app_route_testocaml() -> Tuple[Response, int]:
     language = "ocaml"
     random_test = random.choice(first_tests.TESTS_OCAML)["inputcode"]
-    stdout, stderr, exitcode = execute_code(random_test, language=language)
+    stdout, stderr, exitcode, _ = execute_code(random_test, language=language)
     reply = format_reply(language, stdout, stderr, exitcode=exitcode)
     return Response(reply), 200
 
@@ -349,7 +353,7 @@ def app_route_testocaml() -> Tuple[Response, int]:
 def app_route_testc() -> Tuple[Response, int]:
     language = "c"
     random_test = random.choice(first_tests.TESTS_C)["inputcode"]
-    stdout, stderr, exitcode = execute_code(random_test, language=language)
+    stdout, stderr, exitcode, _ = execute_code(random_test, language=language)
     reply = format_reply(language, stdout, stderr, exitcode=exitcode)
     return Response(reply), 200
 
@@ -363,8 +367,7 @@ def inbound_sms() -> Tuple[Response, int]:
     # we get the SMS message from the request. we could also get the
     # "To" and the "From" phone number as well
     inbound_message = request.form.get("Body")
-    today = time.strftime("%H:%M:%S %Y-%m-%d")
-    print(f"DEBUG: {today} received a new message:\n{inbound_message}")
+    print(f"DEBUG: {today()} received a new message:\n{inbound_message}")
     # we can now use the incoming message text in our Python application
 
     # test messages
@@ -415,12 +418,12 @@ def inbound_sms() -> Tuple[Response, int]:
                 print(f"DEBUG: cleaned inbound_message:\n{inbound_message}")
                 inbound_message = inbound_message.replace(f"{language}:", "", 1).lstrip()
                 print(f"DEBUG: cleaned inbound_message:\n{inbound_message}")
-                stdout, stderr, exitcode = execute_code(inbound_message, language=language)
+                stdout, stderr, exitcode, full_data = execute_code(inbound_message, language=language)
                 print(f"DEBUG: code stdout:\n{stdout}")
                 print(f"DEBUG: code stderr:\n{stderr}")
                 print(f"DEBUG: code exitcode = {exitcode}")
 
-                reply = format_reply(language, stdout, stderr, exitcode=exitcode)
+                reply = format_reply(language, stdout, stderr, exitcode=exitcode, full_data=full_data)
                 print(f"DEBUG: giving back this reply:\n{reply}")
 
                 response.message(reply)
@@ -429,13 +432,8 @@ def inbound_sms() -> Tuple[Response, int]:
         else:
             response.message("Hi! Not quite sure what you meant, but okay.\nLanguage not recognized maybe?\nSent 'Languages?' to get list of languages\nSee https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS for more information!\n(C) Lilian Besson, 2021, MIT Licensed")
 
-    # return str(response)
-
-    # we return back the mimetype because Twilio needs an XML response
-    # OLD API
     print(f"DEBUG: done for the reply, sending back with code=200 (success), this text:\n{str(response)}")
     return Response(str(response)), 200
-    # return Response(str(response), mimetype="application/xml"), 200
 
 
 if __name__ == "__main__":

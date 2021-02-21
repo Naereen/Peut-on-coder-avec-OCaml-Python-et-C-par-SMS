@@ -54,7 +54,7 @@ TESTS_OCAML = [
         "language": "ocaml",
     },
     {
-        "inputcode": "print_endline \"Camisole backend works for OCaml!\";; exit 1;;",
+        "inputcode": "print_endline \"What happens with a exitcode = 1 ?\";; exit 1;;",
         "language": "ocaml",
     },
 ]

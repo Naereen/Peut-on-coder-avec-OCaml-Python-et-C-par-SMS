@@ -32,8 +32,8 @@ camisole_limited_ressources_conf = {
         "mem": 100_000,
     },
     "execute": {
-        "time": 120,
-        "wall-time": 180,
+        "time": 30,
+        "wall-time": 30,
         "extra-time": 30,
         "processes": 64,
         # "quota": "50,3",

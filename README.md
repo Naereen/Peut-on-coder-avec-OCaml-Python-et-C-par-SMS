@@ -1,7 +1,8 @@
-# :fr: :phone: Peut on coder avec OCaml, Python et C par SMS ?
+# :fr: :phone: Peut on coder avec OCaml, Python et C par SMS ? *Oui !*
 
-*J'ai répondu à la question suivante* : peut on coder avec OCaml, Python et C par SMS ?
+*J'ai répondu à la question suivante* : peut on coder avec OCaml, Python ou C **par SMS** ?
 *Spoiler alert*: **oui !**
+TL;DR: Voici un schéma d'explication :
 
 ![./screenshots/proof-of-concept-explanation.png](./screenshots/proof-of-concept-explanation.png)
 
@@ -179,8 +180,8 @@ Si ça marche, vous êtes prêt-e à passer à l'étape suivante :
    # test it, using phone number!
    ```
 
-   Maintenant, si tout a bien marché, ouvrez votre navigateur sur <https://TRUC.ngrok.io/test/python>, <https://TRUC.ngrok.io/test/ocaml> ou <https://TRUC.ngrok.io/test/c> pour tester l'exécution de code via Camisole, depuis n'importe QUEL APPAREIL CONNECTÉ à Internet !
-   **Gardez ce lien toujours privé !** Bon de toutes façon, il n'est valable que 2h avec l'offre gratuite de ngrok... mais en 2h, quelqu'un qui voudrait casser votre machine pourrait réussir !
+   Maintenant, si tout a bien marché, ouvrez votre navigateur sur <https://TRUC.ngrok.io/test/python>, <https://TRUC.ngrok.io/test/ocaml> ou <https://TRUC.ngrok.io/test/c> pour tester l'exécution de code via Camisole, depuis N'IMPORTE QUEL APPAREIL CONNECTÉ à Internet !
+   **Gardez ce lien toujours privé !** Bon de toutes façons, il n'est valable que 2h avec l'offre gratuite de ngrok... mais en 2h, quelqu'un qui voudrait casser votre machine pourrait réussir !
 
 Demonstration :
 
@@ -200,7 +201,7 @@ Si ça marche, vous êtes prêt-e à passer à l'étape suivante :
 
 - Faites défiler vers le bas jusqu'à près du bas de la page et recherchez l'en-tête "Messagging". Modifiez la zone de texte "A Message Comes in" afin qu'elle ait votre URL de transfert ngrok plus la route "/twilio", comme indiqué dans cette capture d'écran.
 
-![respond-sms-python-flask/number-configuration.png](https://www.fullstackpython.com/img/160530-respond-sms-python-flask/number-configuration.png)
+![respond-sms-python-flask/number-configuration](./screenshots/menu-twilio.png)
 
 - Relancez l'appli Flask, tout en ayant encore la VM Camisole ouverte, évidemment :
 
@@ -240,7 +241,7 @@ return 0;
 <img src="./screenshots/doc-21022021/ca_marche_en_langage_C_aussi.png" width="360" alt="ca marche en langage C aussi">
 
 
-J'ai pu tester dimanche 21/02/2021 cette partie, mais je le fais dès que mon numéro Twilio aura été activé [ticket #1](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/1) !
+J'ai pu tester dimanche 21/02/2021 cette partie, je l'ai fais dès que mon numéro Twilio avait été activé, environ 32h après la demande (cf [ticket #1](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/1)) !
 
 
 > Si quelque chose ne fonctionne pas bien, merci [de signaler un problème](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/new) :clap: !
@@ -303,14 +304,15 @@ Ce projet ne sera **pas** distribué sur [le dépôt de packet Pypi](https://pyp
 Écrit en [Python v3.6+](https://www.python.org/3/) (version CPython), et bien en se basant sur de super projets libres et gratuits :
 
 - Avec [Flask v1.1](https://flask.palletsprojects.com/en/1.1.x/) ;
-- Avec [l'API officielle Python de Twilio](https://www.twilio.com/docs/libraries/python) (gratuit, mais payant pour avoir un numéro de téléphone, évidemment !) ;
+- Avec [l'API Python de Twilio](https://www.twilio.com/docs/libraries/python) (gratuit, mais payant pour avoir un numéro de téléphone, évidemment !) ;
 - Avec [Camisole v1.0](https://camisole.prologin.org/) de [Prologin](https://prologin.org/) ;
-- Avec [ngrok](https://ngrok.com/) ;
-- Et avec amour !
+- Avec [ngrok v2.2.8](https://ngrok.com/) ;
+- Un peu de scripts Bash, un joli Makefile, et voilà !
+- Et avec amour :heart_eyes: et passion !
 
 ### :scroll: Licence ? [![GitHub licence](https://img.shields.io/github/license/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.svg)](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/blob/master/LICENSE)
 
-Ce script et cette documentation sont distribuées en accès libre selon les conditions de la [licence MIT](https://lbesson.mit-license.org/) (cf le fichier [LICENSE](LICENSE) en anglais).
+Ce projet et cette documentation sont distribuées en accès libre selon les conditions de la [licence MIT](https://lbesson.mit-license.org/) (cf le fichier [LICENSE](LICENSE) en anglais).
 © [Lilian Besson](https://GitHub.com/Naereen), 2021.
 
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)

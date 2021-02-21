@@ -1,13 +1,13 @@
-# :fr: :phone: Peut on coder avec OCaml Python et C par SMS ?
+# :fr: :phone: Peut on coder avec OCaml, Python et C par SMS ?
 
-Je souhaite répondre à la question suivante : peut on coder avec OCaml Python et C par SMS ?
+*J'ai répondu à la question suivante* : peut on coder avec OCaml, Python et C par SMS ?
 *Spoiler alert*: **oui !**
 
 ![./screenshots/proof-of-concept-explanation.png](./screenshots/proof-of-concept-explanation.png)
 
 ## Quel objectif ?
 
-Je souhaite pouvoir faire ça, depuis mon téléphone :
+Je souhaitais pouvoir faire ça, depuis mon téléphone :
 
 1. J'envoie un texto qui content « `pw:PASSWORD python: print("Hello world from Python!")` » à `0612345678` (un numéro spécifique, pas le vrai), depuis mon téléphone (sans appli, sans Internet, sans rien d'autre que des vieux SMS en GSM) ;
 
@@ -18,8 +18,8 @@ Je souhaite pouvoir faire ça, depuis mon téléphone :
 4. Je veux les fonctionnalités suivantes :
    - qu'il y ait ce mot de passe ;
    - qu'il y ait un numéro incrémental de cellule sortie : trois requêtes de suite seront `Out[1]: ...`, `Out[2]: ...`, `Out[3]: ...`, etc.
-   - que ça fonctionne sans problème pour ces trois langages (voir plus ?) ;
- - - que l'exécution soit sécurisée, et isolée (avec [camisole](https://camisole.prologin.org/) dans [une VM](https://camisole.prologin.org/installation.html#vm-image) ?) ;
+   - que ça fonctionne sans problème pour ces trois langages ([voir plus ?](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/10)) ;
+ - - que l'exécution soit sécurisée, et isolée (avec [camisole](https://camisole.prologin.org/) dans [une VM](https://camisole.prologin.org/installation.html#vm-image)) ;
 
 5. Premières étapes :
    - que le code soit exécuté sur *ma machine* (ou sur un serveur distant quand ce sera prêt) ;
@@ -29,7 +29,7 @@ Je souhaite pouvoir faire ça, depuis mon téléphone :
 
 ## Solution ?
 
-Ce dépôt GitHub contient un petit script Python 3 (avec un serveur [Flask](https://flask.palletsprojects.com/)) pour expérimenter et essayer cela.
+Ce [dépôt GitHub](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS) contient un petit script Python 3 (avec un serveur [Flask](https://flask.palletsprojects.com/)) pour expérimenter et essayer cela.
 
 Quelques questions et réponse :
 
@@ -41,30 +41,36 @@ Quelques questions et réponse :
    - Localement sur mon ordinateur, je vais lancer une petite application Web écrite avec [Flask](https://flask.palletsprojects.com/).
    - Cette application écoute un *webhook* local (qui peut être ouvert sur l'Internet global avec [ngrok](https://ngrok.com/)).
    - Quand un message arrive sur ce *webhook*, l'application Flask répond en renvoyant un SMS avec le résultat de l'exécution du code soumis par la requête au webhook.
-   - Avec l'API de Twilio, on peut connecter cette appli (ouverte avec ngrok) au numéro de téléphone (payant) fourni par le compte Twilio.
+   - [Avec l'API de Twilio](https://www.twilio.com/console), on peut connecter cette appli (ouverte avec ngrok) [au numéro de téléphone (**payant**) fourni par le compte Twilio](https://www.twilio.com/console/phone-numbers/).
    - Avec tout ça, je peux exécuter (et voir la sortie et le code de retour) en envoyant un SMS à ce numéro.
 
 3. **Où ça en est ?**
    1. ~~Juste une idée pour l'instant.~~
    2. ~~C'était une idée le vendredi 19 février vers 13h, c'était quasiment terminé le soir même !~~
    3. Testé et fonctionnel avec toutes les fonctionnalités que j'espérais, en C, Python et OCaml !
-   4. TODO: il reste quelques trucs à faire, regardez les [tickets ouverts](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues), et les TODO: dans ce fichier. (et le code)
+   4. TODO: il reste quelques trucs à faire, regardez les [tickets ouverts](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues), et les TODO: dans ce fichier. (et le code), mais bon le "proof of concept" est terminé, moi ça me suffit.
 
 ## Exemples
 
-### Usage simple
+### Usage "simple"
 
-1. [Installer ce projet](#Installation) (détails plus bas) ;
-2. Créer un compte [Twilio](https://www.twilio.com/try-twilio), créer un numéro de téléphone Twilio (payant mais 15€ offert) ;
-3. Lancer le serveur avec `make local`, tester le ;
-4. Si ça marche, essayez le serveur distant avec `make ngrok` et allez ajouter l'adresse ngrok du webhook dans [le panneau de contrôle Twilio](https://www.twilio.com/console/phone-numbers) ;
-5. Tester avec des exemples :
-   - Par exemple `pw:PASSWORD python: print("Hello world from Python!")` (avec le mot de passe choisi, remplaçant PASSWORD)...
+> Attention, ces explications sont aussi complètes que possible, mais tout ce projet est très expérimental !
+> Je ne saurai être tenu responsable du moindre problème sur votre machine, faites attention !
+> [*hic sunt dracones*](https://en.wikipedia.org/wiki/Here_be_dragons)!
+
+1. [Installer ce projet](#installation) (détails plus bas) ;
+2. Créer un compte [Twilio](https://www.twilio.com/try-twilio), il faut un email valide, et un numéro de téléphone valide pour vérifier que vous n'êtes pas un robot !
+3. créer un numéro de téléphone Twilio (payant mais 15€ offert, cela permet d'essayer le service pour environ 12/0.14=85 essais, c'est déjà pas mal !) ;
+4. Lancer le serveur Flask local, avec avec `make local`, [tester le](#cette-application-flask) ;
+5. Si ça marche, essayez le serveur distant avec `make ngrok` et allez ajouter l'adresse ngrok du webhook dans [le panneau de contrôle Twilio](https://www.twilio.com/console/phone-numbers), attention à bien la mettre sous la forme `https://TRUC.ngrok.io/twilio` (j'oublie le `/twilio` une fois sur deux !) ;
+6. [Tester avec des exemples](#tester-votre-configuration) :
+   - Par exemple `test` pour tester, ou `Langages ?` pour recevoir la liste des langages (possiblement) supportés...
+   - Par exemple `pw:PASSWORD python: print("Hello world from Python!")` (avec le mot de passe choisi, remplaçant PASSWORD), [comme montré plus bas](#rocket-des-sms-qui-exécutent-du-code) ;
    - Cela va vous envoyer un texto contenant la réponse de l'exécution de ce programme, si tout est bien configuré !
-   - Mais n'en abusez pas trop, chaque SMS envoyé et reçu coûte ~0.07€ ! C'est vraiment juste conçu pour « l'effet démo woooooaaa :heart_eyes: » !
-6. Soyez tout content :+1: ! Et ajouter une [petite étoile](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/stargazers) :star: à ce projet ! *Parlez en à vos collègues ou à vos camarades, je suis curieux de vos avis et vos idées !*
+   - Mais n'en abusez pas trop, :warning: **chaque SMS envoyé et reçu coûte ~0.07€** ! C'est vraiment juste conçu pour « l'effet démo woooooaaa :heart_eyes: » !
+7. Soyez tout content :+1: ! Et ajouter une [petite étoile](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/stargazers) :star: à ce projet ! *Parlez en à vos collègues ou à vos camarades, je suis curieux de vos avis et vos idées !*
 
-![screenshots/example-SMS-success.png](screenshots/example-SMS-success.png)
+![screenshots/doc-21022021/ca_marche_en_langage_OCaml_aussi.png](./screenshots/doc-21022021/ca_marche_en_langage_OCaml_aussi.png)
 
 ### Tester votre configuration
 
@@ -76,18 +82,8 @@ Output: It works!
 ```
 
 ```text
-Input: Hello
-Output: Hello back to you from Python!
-```
-
-```text
 Input: Bonjour
 Output: Bien le bonjour depuis Python !
-```
-
-```text
-Input: Languages?
-Output: List of supported languages are: c, ocaml,python
 ```
 
 ```text
@@ -95,11 +91,10 @@ Input: Langages ?
 Output: La liste des langues prises en charge est : c, ocaml, python
 ```
 
-> L'ordre de réponse dans les langages peut changer.
+![screenshots/doc-21022021/Messages_de_tests_sans_Camisole_backend_juste_dire_bonjour_et_liste_des_langages.png](./screenshots/doc-21022021/Messages_de_tests_sans_Camisole_backend_juste_dire_bonjour_et_liste_des_langages.png)
 
-TODO: [make screenshots of this!](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/7)
-
-![screenshots/example-SMS-documentation.png](screenshots/example-SMS-documentation.png)
+> - L'ordre de réponse dans les langages peut changer.
+> - Plus de captures d'écran dans ce fichier [`DocumentationCapturesEcrans.md`](./DocumentationCapturesEcrans.md).
 
 ### Aide
 
@@ -215,6 +210,8 @@ make server
 # test it, using phone number!
 ```
 
+### :rocket: Des SMS qui exécutent du code
+
 Maintenant, si tout a bien marché, 🎉 vous pouvez envoyer un SMS au format suivant au numéro Twilio, et l'appli Flask va vous répondre, en passant par le tunnel ngrok !
 
 ```python
@@ -238,7 +235,9 @@ return 0;
 - Normalement, on peut écrire le code sur plusieurs lignes, pour le C notamment ! Ca marche sans problème !
 - Normalement, la compilation et l'exécution des programmes sont limitées en ressources, en utilisant une [configuration assez agressive de Camisole](https://camisole.prologin.org/usage.html#adding-limits-and-quotas), dans ce fichier [`camisole_limited_ressources_conf.py`](camisole_limited_ressources_conf.py).
 
-TODO: [capture d'écran réussite !](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/7)
+- Ça marche en langages OCaml et C aussi
+
+![screenshots/doc-21022021/ca_marche_en_langage_C_aussi.png](./screenshots/doc-21022021/ca_marche_en_langage_C_aussi.png)
 
 
 J'ai pu tester dimanche 21/02/2021 cette partie, mais je le fais dès que mon numéro Twilio aura été activé [ticket #1](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/1) !

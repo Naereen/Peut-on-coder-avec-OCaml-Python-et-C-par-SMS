@@ -27,7 +27,11 @@ from typing import Tuple
 import base64
 
 from flask import Flask, Response, request
-from twilio import twiml
+
+# https://www.twilio.com/docs/sms/tutorials/how-to-receive-and-reply-python
+# this is the OLD API
+# from twilio import twiml
+from twilio.twiml.messaging_response import MessagingResponse
 
 from safeExecuteCode import safe_execute_code, URL, SUPPORTED_LANGUAGES
 
@@ -37,7 +41,7 @@ DEBUG = False
 DEBUG = True
 
 # To avoid risking a HUGE Twilio bill, by default the server stops as soon as one language has received more than MAX_SMSNUMBER requests by SMS.
-MAX_SMSNUMBER = 10
+MAX_SMSNUMBER = 100
 
 today = time.strftime("%H:%M:%S %Y-%m-%d")
 
@@ -54,6 +58,7 @@ def read_b64_file(name: str) -> str:
                 content = content[:-1]
             content = content.decode()
             print(f"DEBUG: content read is\n{content}")
+            content = content.replace('\n', '')
             return content
     except OSError:
         print(f"Error: unable to read the file '{name}' ...")
@@ -78,20 +83,29 @@ print(f"Using password = {PASSWORD}...")
 
 def has_password(message: str) -> bool:
     """ Checks for presence of a password in message, in the form of `pw:SOMEPASSWORDNOSPACE`."""
-    res = re.search("pw:([^ ]+)", message)
+    print(f"DEBUG: message = '{message}'")
+    print(f"DEBUG: and PASSWORD = '{PASSWORD}'")
+    res = re.search("pw:([^ ]+) ", message)
     return res is not None
 
 def parse_password(message: str) -> str:
     """ Returns password in message, in the form of `pw:SOMEPASSWORDNOSPACE`."""
-    res = re.search("pw:([^ ]+)", message)
+    print(f"DEBUG: message = '{message}'")
+    print(f"DEBUG: and PASSWORD = '{PASSWORD}'")
+    res = re.search("pw:([^ ]+) ", message)
     if res:
         password = res.group(0)
+        print(f"DEBUG: found a matching password = '{password}'")
         password = password.replace("pw:", "", 1)
+        password = password.rstrip()
+        print(f"DEBUG: cleaned to password = '{password}'")
         return password
     return ""
 
 def check_password(password: str) -> bool:
     """ Checks if password in message is correct."""
+    print(f"DEBUG: checking = '{password}'")
+    print(f"DEBUG: and PASSWORD = '{PASSWORD}'")
     return password == PASSWORD
 
 
@@ -178,7 +192,7 @@ from collections import defaultdict
 cellnumbers = defaultdict(lambda: 0)
 smsnumber = 0
 
-def format_reply(language: str, stdout: str, stderr: str, exitcode=0) -> str:
+def format_reply(language: str, stdout: str, stderr: str, exitcode=0, full_data=None) -> str:
     """ Format the reply to a nice message that can be printed or sent back by SMS."""
     global cellnumbers, smsnumber
     today = time.strftime("%H:%M:%S %Y-%m-%d")
@@ -193,7 +207,39 @@ def format_reply(language: str, stdout: str, stderr: str, exitcode=0) -> str:
     elif stderr and not stdout:
         reply = f"""Time: {today}\nError[{cellnumber}] exitcode={exitcode} : {stderr}"""
     else:
-        reply = f"""Time: {today}\nNo output or error for cell number {cellnumber}"""
+        # TODO: print compiler error if something failed?
+        # {'success': True,
+        # 'tests': [{'exitcode': 1,
+        #             'meta': {'cg-mem': 2492,
+        #                     'cg-oom-killed': 0,
+        #                     'csw-forced': 10,
+        #                     'csw-voluntary': 66,
+        #                     'exitcode': 0,
+        #                     'exitsig': 0,
+        #                     'exitsig-message': None,
+        #                     'killed': True,
+        #                     'max-rss': 7136,
+        #                     'message': 'Time limit exceeded (wall clock)',
+        #                     'status': 'TIMED_OUT',
+        #                     'time': 0.017,
+        #                     'wall-time': 60.116},
+        #             'name': 'test000',
+        #             'stderr': '',
+        #             'stdout': ''}]
+        if full_data and "tests" in full_data and "meta" in full_data[0]:
+            warning_response = "TODO"
+            meta_data = full_data[0]["meta"]
+            if "message" in meta_data:
+                warning_response = meta_data["message"]
+                if "(wall clock)" in warning_response and "wall-time" in meta_data:
+                    wall_time = meta_data["wall-time"]
+                    warning_response = warning_response.replace("(wall clock)", f"(wall clock) (time = {wall_time})")
+                if "(time clock)" in warning_response and "time" in meta_data:
+                    time_clock = meta_data["time"]
+                    warning_response = warning_response.replace("(time clock)", f"(time clock) (time = {time_clock})")
+            reply = f"""Time: {today}\nFailed compilation or execution, got this reply for cell number {cellnumber}\n{warning_response}"""
+        else:
+            reply = f"""Time: {today}\nNo output or error for cell number {cellnumber}"""
     return reply
 
 
@@ -310,57 +356,86 @@ def app_route_testc() -> Tuple[Response, int]:
 
 # ============ now the Twilio part ============
 
+# def inbound_sms() -> str:
 @app.route("/twilio", methods=["POST"])
 def inbound_sms() -> Tuple[Response, int]:
-    response = twiml.Response()
+    response = MessagingResponse()
     # we get the SMS message from the request. we could also get the
     # "To" and the "From" phone number as well
     inbound_message = request.form.get("Body")
+    today = time.strftime("%H:%M:%S %Y-%m-%d")
+    print(f"DEBUG: {today} received a new message:\n{inbound_message}")
     # we can now use the incoming message text in our Python application
 
-    # DONE add a password
-    if has_password(inbound_message):
-        return Response("No password! Add a password by starting your SMS with pw:PASSWORD, with no space!"), 500
-    password = parse_password(inbound_message)
-    inbound_message = inbound_message.replace(f"pw:{password} ", "", 1)
-    if not check_password(password):
-        return Response("Wrong password! Hint: password might be 1234, if the developper was stupid!"), 500
-
     # test messages
+    # TODO: remove when DEBUG is done (https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/1)
     if inbound_message == "test":
+        # DONE it works! 2021-02-21 04:33:03
+        print(f"DEBUG: sending back\nIt works!")
         response.message("It works!")
     elif inbound_message == "Hello":
+        # DONE it works! 2021-02-21 04:33:03
+        print(f"DEBUG: sending back\nHello back to you from Python!")
         response.message("Hello back to you from Python!")
     elif inbound_message == "Bonjour":
+        # DONE it works! 2021-02-21 04:33:03
+        print(f"DEBUG: sending back\nBien le bonjour depuis Python !")
         response.message("Bien le bonjour depuis Python !")
 
     # return list of supported languages
     elif inbound_message == "Languages?":
+        # DONE it works! 2021-02-21 04:33:03
         str_languages = ", ".join(SUPPORTED_LANGUAGES)
+        print(f"DEBUG: sending back\nList of supported languages are: {str_languages}")
         response.message(f"List of supported languages are: {str_languages}")
 
     # return list of supported languages
     elif inbound_message == "Langages ?":
+        # DONE it works! 2021-02-21 04:33:03
         str_languages = ", ".join(SUPPORTED_LANGUAGES)
+        print(f"DEBUG: sending back\nLa liste des langues prises en charge est : {str_languages}")
         response.message(f"La liste des langues prises en charge est : {str_languages}")
 
     # now for languages
     else:
+        # DONE add a password
+        if not has_password(inbound_message):
+            print("ERROR: No password! Add a password by starting your SMS with pw:PASSWORD, with no space!")  # DEBUG
+            return Response("No password! Add a password by starting your SMS with pw:PASSWORD, with no space!"), 500
+        password = parse_password(inbound_message)
+        print(f"DEBUG: extracted password to be: '{password}'")
+        inbound_message = inbound_message.replace(f"pw:{password} ", "", 1)
+        if not check_password(password):
+            print("ERROR: Wrong password! Hint: password might be 1234, if the developper was stupid!")  # DEBUG
+            return Response("Wrong password! Hint: password might be 1234, if the developper was stupid!"), 500
         for language in SUPPORTED_LANGUAGES:
             if inbound_message.startswith(f"{language}:"):
-
-                inbound_message = inbound_message.replace("{language}:", "", 1).lstrip()
+                print(f"\nDEBUG: ==> detected that the message uses language = {language}")
+                inbound_message = inbound_message.replace(f"{language}:\n", "", 1).lstrip()
+                print(f"DEBUG: cleaned inbound_message:\n{inbound_message}")
+                inbound_message = inbound_message.replace(f"{language}:", "", 1).lstrip()
+                print(f"DEBUG: cleaned inbound_message:\n{inbound_message}")
                 stdout, stderr, exitcode = execute_code(inbound_message, language=language)
+                print(f"DEBUG: code stdout:\n{stdout}")
+                print(f"DEBUG: code stderr:\n{stderr}")
+                print(f"DEBUG: code exitcode = {exitcode}")
+
                 reply = format_reply(language, stdout, stderr, exitcode=exitcode)
+                print(f"DEBUG: giving back this reply:\n{reply}")
 
                 response.message(reply)
                 break
         # default response
         else:
-            response.message("Hi! Not quite sure what you meant, but okay.\nSee https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS for more information!\n(C) Lilian Besson, 2021, MIT Licensed")
+            response.message("Hi! Not quite sure what you meant, but okay.\nLanguage not recognized maybe?\nSent 'Languages?' to get list of languages\nSee https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS for more information!\n(C) Lilian Besson, 2021, MIT Licensed")
+
+    # return str(response)
 
     # we return back the mimetype because Twilio needs an XML response
-    return Response(str(response), mimetype="application/xml"), 200
+    # OLD API
+    print(f"DEBUG: done for the reply, sending back with code=200 (success), this text:\n{str(response)}")
+    return Response(str(response)), 200
+    # return Response(str(response), mimetype="application/xml"), 200
 
 
 if __name__ == "__main__":

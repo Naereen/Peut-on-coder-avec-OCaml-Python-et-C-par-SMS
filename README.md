@@ -233,12 +233,13 @@ return 0;
 }"
 ```
 
-Normalement, on peut écrire le code sur plusieurs lignes, pour le C notamment ? TODO: à tester
+- Normalement, on peut écrire le code sur plusieurs lignes, pour le C notamment ! Ca marche sans problème !
+- Normalement, la compilation et l'exécution des programmes sont limitées en ressources, en utilisant une [configuration assez agressive de Camisole](https://camisole.prologin.org/usage.html#adding-limits-and-quotas), dans ce fichier [`camisole_limited_ressources_conf.py`](camisole_limited_ressources_conf.py).
 
 TODO: capture d'écran réussite !
 
 
-TODO: je n'ai pas encore pu tester cette partie, mais je le fais dès que mon numéro Twilio aura été activé [ticket #1](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/1) !
+J'ai pu tester dimanche 21/02/2021 cette partie, mais je le fais dès que mon numéro Twilio aura été activé [ticket #1](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/1) !
 
 
 > Si quelque chose ne fonctionne pas bien, merci [de signaler un problème](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/new) :clap: !

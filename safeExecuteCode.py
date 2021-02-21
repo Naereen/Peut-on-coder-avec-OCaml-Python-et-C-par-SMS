@@ -13,6 +13,13 @@ from pprint import pprint
 import json
 import requests
 
+from camisole_limited_ressources_conf import camisole_limited_ressources_conf
+
+assert camisole_limited_ressources_conf
+
+print(f"\nDEBUG: using this camisole_limited_ressources_conf for all requests:")
+pprint(camisole_limited_ressources_conf)
+
 # DONE: when importing the module, connect to VM, and list languages
 SUPPORTED_LANGUAGES = [
     "python",
@@ -92,42 +99,17 @@ def safe_execute_code(inputcode,
         url=None
     ):
     """ Ask Camisole to execute the <inputcode> written in <language>, and returns the JSON result from Camisole."""
+
     data = {
         "lang": str(language),
         "source": str(inputcode),
-        # https://camisole.prologin.org/usage.html#adding-limits-and-quotas
-        # Documentation:
-# time: limit the user time of the program (seconds)
-# wall-time: limit the wall time of the program (seconds)
-# extra-time: grace period before killing a program after it exceeded a time limit (seconds)
-# mem: limit the available memory of each process (kilobytes)
-# virt-mem: limit the address space of each process (kilobytes)
-# fsize: limit the size of files created by the program (kilobytes)
-# processes: limit the number of processes and/or threads
-# quota: limit the disk quota to a number of blocks and inodes (separate both numbers by a comma, eg. 10,30)
-# stack: limit the stack size of each process (kilobytes)
-        #
-        "compile": {
-            "time": 30,
-            "wall-time": 60,
-            "extra-time": 15,
-            "processes": 64,
-            # "quota": "50,3",
-            "fsize": 10_000,
-            "stack": 10_000,
-            "mem": 100_000,
-        },
-        "execute": {
-            "time": 30,
-            "wall-time": 60,
-            "extra-time": 15,
-            "processes": 64,
-            # "quota": "50,3",
-            "fsize": 10_000,
-            "stack": 10_000,
-            "mem": 100_000,
-        }
     }
+    data.update(camisole_limited_ressources_conf)
+
+    # TODO: remove this when debugging is done
+    print(f"\nDEBUG: using this data after adding camisole_limited_ressources_conf:")
+    pprint(data)
+
     return post_request_to_camisole(data,
         protocol=protocol,
         port=port,

@@ -3,6 +3,8 @@
 Je souhaite répondre à la question suivante : peut on coder avec OCaml Python et C par SMS ?
 *Spoiler alert*: **oui !**
 
+![./screenshots/proof-of-concept-explanation.png](./screenshots/proof-of-concept-explanation.png)
+
 ## Quel objectif ?
 
 Je souhaite pouvoir faire ça, depuis mon téléphone :

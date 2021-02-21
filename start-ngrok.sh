@@ -23,7 +23,7 @@ set -eu
 function printhelp(){
     cat << EOF
 ngrok_and_text_address.sh: a script to launch ngrok (see http://ngrok.com/)
-every 8 hours, get the address, send it to my phone. Durty but efficient!
+every 2 hours, get the address, send it to my phone. Durty but efficient!
 
 Usage: ngrok_and_text_address.sh [protocol] [port]
 
@@ -59,7 +59,7 @@ fi
 
 # Copyrights and options
 echo -e "${green}$0 v${version} : copyright (C) 2018 Lilian Besson"
-echo -e "  You can find it online (https://bitbucket.org/lbesson/bin/src/master/Wait)"
+echo -e "  You can find it online (https://bitbucket.org/lbesson/bin/src/master/ngrok_and_text_address)"
 echo -e "  This is free software, and you are welcome to redistribute it under certain conditions."
 echo -e "  This program comes with ABSOLUTELY NO WARRANTY; for details see http://lbesson.mit-license.org${white}"
 ${JUSTVERSION} && exit 1
@@ -68,7 +68,7 @@ ${JUSTVERSION} && exit 1
 protocol="${1:-http}"
 port="${2:-5000}"
 
-nbhour_freeplan=8
+nbhour_freeplan=2
 # maxtime=30  # DEBUG
 maxtime=$(( nbhour_freeplan * 60 * 60 - 30 ))
 
@@ -82,8 +82,8 @@ function launch_ngrok_in_tmux_bottom_window() {
     else
         echo -e "${blue}no ngrok running...${reset}"
     fi
-    echo -e "Starting ngrok in a bottom pan (in tmux)..."
-    tmux split-window -d "ngrok ${protocol} ${port}"
+    echo -e "Starting ngrok in a right pan (in tmux)..."
+    tmux split-window -h "ngrok ${protocol} ${port}"
     echo -e "Sleeping 2 seconds..."
     sleep 2
     echo -e "OK, pid of ngrok is $(pidof ngrok), it seems to be running well..."

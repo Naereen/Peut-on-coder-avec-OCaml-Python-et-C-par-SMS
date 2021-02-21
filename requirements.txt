@@ -12,5 +12,4 @@ twilio
 # for POST requests made easy
 requests
 
-# TODO: camisole?
-# no, it runs OUTSIDE of this project, on a VM to start manually, for extra security
+# camisole? no, it runs OUTSIDE of this project, on a VM to start manually, for extra security

@@ -26,7 +26,8 @@ start: test_api
 	./venv3/bin/python3 ./app.py
 
 ngrok:
-	# TODO: don't use my script, just use ngrok?
+	# TODO: don't use my script, just use ngrok? no it's great
+	# TODO: document that it uses https://github.com/Naereen/FreeSMS.py/
 	./start-ngrok.sh $(PROTOCOL) $(PORT) &
 
 test_api:	test_hello_api test_python test_ocaml test_c
@@ -91,7 +92,6 @@ notify:
 # ===================== Cleaners =====================
 
 clean:	clean-temp
-# TODO: more
 clean-temp:
 	-mv -vf ./*~ /tmp/
 

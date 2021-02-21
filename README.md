@@ -95,7 +95,7 @@ Output: La liste des langues prises en charge est : c, ocaml, python
 
 > L'ordre de réponse dans les langages peut changer.
 
-TODO: make screenshots of this!
+TODO: [make screenshots of this!](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/7)
 
 ![screenshots/example-SMS-documentation.png](screenshots/example-SMS-documentation.png)
 
@@ -236,7 +236,7 @@ return 0;
 - Normalement, on peut écrire le code sur plusieurs lignes, pour le C notamment ! Ca marche sans problème !
 - Normalement, la compilation et l'exécution des programmes sont limitées en ressources, en utilisant une [configuration assez agressive de Camisole](https://camisole.prologin.org/usage.html#adding-limits-and-quotas), dans ce fichier [`camisole_limited_ressources_conf.py`](camisole_limited_ressources_conf.py).
 
-TODO: capture d'écran réussite !
+TODO: [capture d'écran réussite !](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/7)
 
 
 J'ai pu tester dimanche 21/02/2021 cette partie, mais je le fais dès que mon numéro Twilio aura été activé [ticket #1](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/1) !
@@ -250,25 +250,33 @@ J'ai pu tester dimanche 21/02/2021 cette partie, mais je le fais dès que mon nu
 - Au lancement, l'appli teste pour voir que la connexion avec la VM Camisole fonctionne bien, et qu'elle est capable d'exécuter du code Python, OCaml et C .
 - Quand quelque chose se passe mal, la console dans laquelle on a lancé l'appli Flask affiche plein de choses. Essayez de régler ça vous même, sinon [ouvrez un ticket !](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/new)
 - Malgré la VM, et les précautions, ce n'est PAS DU TOUT SÉCURISÉ ! Ne testez pas les limites du système, je ne saurai tenu responsable de RIEN !
-- Regardez [`Tests.md`](./Tests.md) pour plus d'informations sur des entrées/sorties qui devraient être sécurisées ! TODO: tester ça !
+- Regardez [`Tests.md`](./Tests.md) pour plus d'informations sur des entrées/sorties qui devraient être sécurisées ! TODO: [tester ça !](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/6)
 
 ---
 
 ## Que reste-t-il à faire ?
 
-### :boom: TODO: Tester en vrai !
+> - Ça me semble déjà génial, pour une petite expérience, terminée en 48 heures !
+> - C'est un bon "proof of concept"...
+> - A montrer à des élèves quand on parle de langages de programmation, interprété ou compilé... et de sémantique !
+> - Pour autant que je sache, derrière ce truc par SMS y'a juste mon pote avec sa calculatrice !
 
 ### :boom: TODO
 
-- More tests from [`json_tests/`](json_tests/) folder ;
-- Automate creation of `.json` files from `.python`, `.ocaml`, `.c` files (for these `json_tests`);
-- When reading `input()` for password, use a "hidden" input like real password on UNIX ? Useless, but fun to try!
-- Allow any language supported by Camisole (Ada, C, C#, C++, D, Go, Haskell, Java, Javascript, Lua, OCaml, PHP, Pascal, Perl, Prolog, Python, Ruby, Rust, Scheme) ? This is okay from backend, but frontend so far is manual.
-- ~~Clean up code?~~ It's already not bad :ok_hand:!
+[![GitHub issues](https://img.shields.io/github/issues/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.svg)](https://GitHub.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/)
+[![GitHub issues-closed](https://img.shields.io/github/issues-closed/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.svg)](https://GitHub.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues?q=is%3Aissue+is%3Aclosed)
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.svg)](http://isitmaintained.com/project/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS "Average time to resolve an issue")
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.svg)](http://isitmaintained.com/project/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS "Percentage of issues still open")
+
+- TODO: [More tests from](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/8) [`json_tests/`](json_tests/) folder ;
+- TODO: [Automate creation](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/8) of `.json` files from `.python`, `.ocaml`, `.c` files (for these `json_tests`);
+- TODO: [When reading](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/9) `input()` for password, use a "hidden" input like real password on UNIX ? Useless, but fun to try!
+- TODO: [Allow any language supported by Camisole](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/10) (Ada, C, C#, C++, D, Go, Haskell, Java, Javascript, Lua, OCaml, PHP, Pascal, Perl, Prolog, Python, Ruby, Rust, Scheme) ? This is okay from backend, but frontend so far is manual.
+- DONE: ~~Clean up code?~~ It's already not bad :ok_hand:!
 
 ### More TODO?
 
-- Write a wrapper script like `run-camisoled`, that can read a file in Python/OCaml/C, and safely pass it to Camisole VM, and pretty-print its JSON results! For my teaching next year this would be veryyy useful!
+- [Write a wrapper script like](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/2) `run-camisoled`, that can read a file in Python/OCaml/C, and safely pass it to Camisole VM, and pretty-print its JSON results! For my teaching next year this would be veryyy useful!
 
 ### Avec `pip` ? Non.
 
@@ -303,6 +311,10 @@ Ce projet ne sera **pas** distribué sur [le dépôt de packet Pypi](https://pyp
 
 Ce script et cette documentation sont distribuées en accès libre selon les conditions de la [licence MIT](https://lbesson.mit-license.org/) (cf le fichier [LICENSE](LICENSE) en anglais).
 © [Lilian Besson](https://GitHub.com/Naereen), 2021.
+
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+[![Bash Shell](https://badges.frapsoft.com/bash/v1/bash.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
+[![HitCount](http://hits.dwyl.io/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS.svg)](http://hits.dwyl.io/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS)
 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/graphs/commit-activity)
 [![Demandez moi n'importe quoi !](https://img.shields.io/badge/Demandez%20moi-n'%20importe%20quoi-1abc9c.svg)](https://GitHub.com/Naereen/ama.fr)

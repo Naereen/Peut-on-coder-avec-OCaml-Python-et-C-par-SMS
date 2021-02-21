@@ -45,7 +45,7 @@ def post_request_to_camisole(data,
         if endpoint:
             endpoint = f"/{endpoint}"
         url = f"{protocol}://{address}:{port}{endpoint}"
-    # TODO: use a real logger? Flemme
+    # TODO: use a real logger? Flemme!
     print(f"DEBUG: using url = {url}")
     try:
         print(f"DEBUG: reading data = {data}")
@@ -106,7 +106,7 @@ def safe_execute_code(inputcode,
     }
     data.update(camisole_limited_ressources_conf)
 
-    # TODO: remove this when debugging is done
+    # TODO: remove this when debugging is done?
     print(f"\nDEBUG: using this data after adding camisole_limited_ressources_conf:")
     pprint(data)
 

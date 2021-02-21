@@ -12,7 +12,6 @@
 #
 
 # Use to check if password file is present
-import json
 import os.path
 # Use time get string for today current hour
 import time
@@ -29,11 +28,7 @@ import base64
 from flask import Flask, Response, request
 
 # https://www.twilio.com/docs/sms/tutorials/how-to-receive-and-reply-python
-# this is the OLD API
-# from twilio import twiml
 from twilio.twiml.messaging_response import MessagingResponse
-
-from safeExecuteCode import safe_execute_code, URL, SUPPORTED_LANGUAGES
 
 # Turn to True if DEBUG mode
 # DEBUG mode for a Flask app means that it automatically reloads when this file changes!
@@ -45,6 +40,9 @@ MAX_SMSNUMBER = 100
 
 def today():
     return time.strftime("%H:%M:%S %Y-%m-%d")
+
+
+# ======================== password ========================
 
 
 # DONE: read from .password.b64 file
@@ -72,8 +70,11 @@ if not os.path.exists(PASSWORD_FILE):
     print(f"\nPassword file '{PASSWORD_FILE}' does not exist, please enter a password!")
     local_password = input("Password= ")
     # TODO real password input? Flemme! so not important
-    with open(PASSWORD_FILE, "w") as file:
-        print(base64.encodebytes(local_password.encode()), file=file, flush=True)
+    with open(PASSWORD_FILE, "wb") as file:
+        bytes_local_password = local_password.encode()
+        b64_local_password = base64.encodebytes(bytes_local_password)
+        # str_b64_local_password = b64_local_password.decode()
+        file.write(b64_local_password)
 
 PASSWORD = read_b64_file(PASSWORD_FILE)
 if PASSWORD is None:
@@ -108,6 +109,11 @@ def check_password(password: str) -> bool:
     print(f"DEBUG: checking = '{password}'")
     print(f"DEBUG: and PASSWORD = '{PASSWORD}'")
     return password == PASSWORD
+
+
+# ======================== safe execution part ========================
+
+from safeExecuteCode import safe_execute_code, URL, SUPPORTED_LANGUAGES
 
 
 class FailedExecution(Exception):

@@ -70,7 +70,7 @@ Quelques questions et réponse :
    - Mais n'en abusez pas trop, :warning: **chaque SMS envoyé et reçu coûte ~0.07€** ! C'est vraiment juste conçu pour « l'effet démo woooooaaa :heart_eyes: » !
 7. Soyez tout content :+1: ! Et ajouter une [petite étoile](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/stargazers) :star: à ce projet ! *Parlez en à vos collègues ou à vos camarades, je suis curieux de vos avis et vos idées !*
 
-![screenshots/doc-21022021/ca_marche_en_langage_OCaml_aussi.png](./screenshots/doc-21022021/ca_marche_en_langage_OCaml_aussi.png)
+<img src="./screenshots/doc-21022021/ca_marche_en_langage_OCaml_aussi.png" width="360" alt="ca marche en langage OCaml aussi">
 
 ### Tester votre configuration
 
@@ -91,7 +91,7 @@ Input: Langages ?
 Output: La liste des langues prises en charge est : c, ocaml, python
 ```
 
-![screenshots/doc-21022021/Messages_de_tests_sans_Camisole_backend_juste_dire_bonjour_et_liste_des_langages.png](./screenshots/doc-21022021/Messages_de_tests_sans_Camisole_backend_juste_dire_bonjour_et_liste_des_langages.png)
+<img src="./screenshots/doc-21022021/Messages_de_tests_sans_Camisole_backend_juste_dire_bonjour_et_liste_des_langages.png" width="360" alt="Messages de tests sans Camisole backend juste dire bonjour et liste des langages">
 
 > - L'ordre de réponse dans les langages peut changer.
 > - Plus de captures d'écran dans ce fichier [`DocumentationCapturesEcrans.md`](./DocumentationCapturesEcrans.md).
@@ -237,7 +237,7 @@ return 0;
 
 - Ça marche en langages OCaml et C aussi
 
-![screenshots/doc-21022021/ca_marche_en_langage_C_aussi.png](./screenshots/doc-21022021/ca_marche_en_langage_C_aussi.png)
+<img src="./screenshots/doc-21022021/ca_marche_en_langage_C_aussi.png" width="360" alt="ca marche en langage C aussi">
 
 
 J'ai pu tester dimanche 21/02/2021 cette partie, mais je le fais dès que mon numéro Twilio aura été activé [ticket #1](https://github.com/Naereen/Peut-on-coder-avec-OCaml-Python-et-C-par-SMS/issues/1) !

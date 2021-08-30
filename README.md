@@ -117,7 +117,7 @@ Please use 'make <target>' where <target> is one of
 
 ### Cas d'échec
 
-Les scripts est écrit et anglais, et ils devraient afficher des messages d'erreurs clairs selon les causes d'échec.
+Les scripts sont écrits en anglais, et ils devraient afficher des messages d'erreurs clairs selon les causes d'échec.
 *Merci de signaler des bugs si vous en rencontrez, en précisant quelle version de Camisole, Flask, Twillio, et Python vous utilisez, et en incluant le message d'erreur entier. Merci d'avance :pray: !*
 
 ----
